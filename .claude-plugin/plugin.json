@@ -7,6 +7,5 @@
     "email": "mito@chronista.club"
   },
   "repository": "https://github.com/chronista-club/claude-plugin-team-bucciarati",
-  "keywords": ["agents", "pipeline", "jojo", "team", "orchestration"],
-  "agents": "${CLAUDE_PLUGIN_ROOT}/agents"
+  "keywords": ["agents", "pipeline", "jojo", "team", "orchestration"]
 }
