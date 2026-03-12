@@ -132,6 +132,36 @@ Sex Pistols
 - 「この3つのIssueを並列で」
 - 「ワーカー立てて並列でやって」
 
+## Issue Pipeline
+
+Issue 番号を起点にしたエンドツーエンドパイプライン。Issue → Branch → 実装 → PR → Merge → Deploy → Close。
+
+```
+Issue #N → Sticky Fingers → (Moody Blues →) Gold Experience → Issue Close
+  起点   →  ブランチ+PR  → (品質検証 →)    デプロイ       →  完了
+```
+
+### フロー
+
+1. **Aerosmith**: `gh issue view #N` で Issue 内容を把握、Issue コンテキストを生成
+2. **Sticky Fingers**: Issue 番号からブランチ作成（`feat/N-slug`）、PR に `Closes #N` 挿入、マージ
+3. **Moody Blues** (任意): CI + レビュー（変更規模に応じて省略可）
+4. **Gold Experience** (任意): デプロイが必要な場合のみ
+5. **Issue Close**: マージ時の `Closes #N` で自動クローズ、またはデプロイ後に手動クローズ
+
+### トリガー例
+- 「#239 をやって」
+- 「Issue 239 をフルパイプラインで」
+- 「この Issue、ブランチ切ってPR出してマージまで」
+
+### Issue コンテキスト
+
+各スタンドに引き渡される情報:
+- `issue_number`: GitHub Issue 番号
+- `issue_title`: Issue タイトル
+- `branch_name`: Issue から生成されたブランチ名
+- `needs_deploy`: デプロイが必要かどうか（ラベル等から判断）
+
 ## カスタムパイプライン
 
 上記パターンに当てはまらない場合、Aerosmith が状況に応じてカスタムパイプラインを構築する。

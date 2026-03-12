@@ -77,6 +77,27 @@ Gold Experience
   デプロイ
 ```
 
+### Issue Pipeline（Issue 起点のエンドツーエンド）
+```
+Issue #N → Sticky Fingers → (Moody Blues →) Gold Experience → Issue Close
+  起点   →  ブランチ+PR  → (品質検証 →)    デプロイ       →  完了
+```
+
+## Issue コンテキスト
+
+ユーザーが Issue 番号を指定した場合（例: `#239 をやって`）、パイプライン全体で Issue コンテキストを引き回す:
+
+```bash
+gh issue view <N> --json title,body,labels,state
+```
+
+Issue コンテキストがある場合:
+- **ブランチ名**: Issue 番号 + タイトルから自動生成（例: `feat/239-local-dev-setup`）
+- **PR リンク**: `Closes #239` を PR body に自動挿入
+- **完了時**: パイプラインの最終ステップで `gh issue close` を実行
+
+Issue コンテキストは各スタンドに引き継ぐ（prompt に含める）。
+
 ## 実行フロー
 
 ### Step 1: 偵察（上空からスキャン）
@@ -90,6 +111,7 @@ git log --oneline -5
 ```
 
 - 変更の状態を把握（未コミット？ PR 済み？ マージ済み？）
+- **Issue 番号があれば `gh issue view` で内容を把握**
 - ユーザーの指示からどこまで実行するか判断
 - パイプラインを決定して報告
 
@@ -102,11 +124,26 @@ git log --oneline -5
 - Moody Blues が BLOCKED 判定 → パイプライン停止、ユーザーに報告
 - Sticky Fingers がエラー → パイプライン停止、ユーザーに報告
 - 各スタンド間で結果のサマリーを引き継ぐ
+- **Issue コンテキストがある場合、各スタンドの prompt に Issue 番号とブランチ名を含める**
 
-### Step 3: 完了報告
+### Step 3: Issue クローズ（Issue コンテキストがある場合）
+
+パイプラインの最終ステップが成功した場合、Issue を閉じる:
+
+```bash
+gh issue close <N> --comment "Completed via pipeline: PR #<PR番号> merged"
+```
+
+- Sticky Fingers がマージ時に `Closes #N` で自動クローズされる場合は不要
+- Gold Experience（デプロイ）が最終ステップの場合、デプロイ成功後にクローズ
+
+### Step 4: 完了報告
 
 ```
 ## Aerosmith Mission Report
+
+### Issue
+#239 ローカル開発環境のセットアップ自動化
 
 ### Pipeline
 Moody Blues → Sticky Fingers → Gold Experience
@@ -115,9 +152,10 @@ Moody Blues → Sticky Fingers → Gold Experience
 | Stand | Status | Summary |
 |-------|--------|---------|
 | Moody Blues | SHIP IT | CI all pass, 0 issues |
-| Sticky Fingers | Done | PR #123 merged |
+| Sticky Fingers | Done | PR #240 merged (Closes #239) |
 | Gold Experience | ALIVE | Health check OK |
 
+### Issue: CLOSED
 ### Mission: COMPLETE
 ```
 

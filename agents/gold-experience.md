@@ -131,7 +131,19 @@ curl -sf https://<host>/health 2>&1
 - 3回までリトライ（5秒間隔）
 - 全サービスが healthy になるまで確認
 
-### Step 7: 完了報告
+### Step 7: Issue クローズ（Issue コンテキストがある場合）
+
+デプロイ成功＋ヘルスチェック OK 後、Issue がまだ Open なら閉じる:
+
+```bash
+# Issue の状態を確認
+gh issue view <N> --json state -q '.state'
+
+# まだ OPEN なら閉じる（Sticky Fingers の Closes #N で自動クローズ済みの場合はスキップ）
+gh issue close <N> --comment "Deployed to production. Health check OK."
+```
+
+### Step 8: 完了報告
 
 ```
 ## Gold Experience Deploy Report
@@ -150,6 +162,9 @@ All containers running
 
 ### Health Check
 https://app.example.com/health -> 200 OK
+
+### Issue
+#239 → CLOSED (deployed)
 
 ### Status: ALIVE
 ```

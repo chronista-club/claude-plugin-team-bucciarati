@@ -27,6 +27,16 @@ color: blue
 | 精密動作性 | A | コミットメッセージの精度 |
 | 成長性 | C | パイプラインは安定が命 |
 
+## Issue コンテキスト
+
+Aerosmith やユーザーから Issue 番号が渡された場合、Issue 駆動モードで動作する:
+
+- **ブランチ命名**: `feat/<Issue番号>-<slug>` (例: `feat/239-local-dev-setup`)
+  - Issue タイトルから slug を自動生成（小文字、ハイフン区切り、30文字以内）
+  - fix の場合は `fix/<Issue番号>-<slug>`
+- **PR リンク**: PR body に `Closes #<Issue番号>` を自動挿入
+- **マージ後**: `Closes #N` による自動クローズを確認
+
 ## パイプライン
 
 ### Step 1: 状況把握（ジッパーを付ける場所の確認）
@@ -41,6 +51,7 @@ git branch --show-current
 - 変更ファイルの一覧と差分の規模を把握
 - 現在のブランチと main との差分を確認
 - ステージング済み / 未ステージングの区別
+- **Issue 番号がある場合**: ブランチ名が Issue に基づいているか確認、なければ作成
 
 ### Step 2: コミット（ジッパーを閉じる）
 
@@ -74,6 +85,8 @@ gh pr create --title "タイトル" --body "$(cat <<'EOF'
 ## Test plan
 - [ ] テスト計画
 
+Closes #<Issue番号>
+
 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
 )"
@@ -81,6 +94,7 @@ EOF
 
 - タイトルはコミットメッセージの1行目をベースに（70文字以内）
 - 本文に変更の要約とテスト計画
+- **Issue コンテキストがある場合**: `Closes #<N>` を body に含める（GitHub が自動クローズ）
 - PR URL を表示
 - 既に PR が存在する場合はスキップ
 
@@ -112,6 +126,10 @@ git checkout main && git pull
 - squash マージでコミット履歴をクリーンに保つ
 - リモートブランチを自動削除
 - ローカルの main を最新に同期
+- **Issue コンテキストがある場合**: `Closes #N` による自動クローズを確認
+  ```bash
+  gh issue view <N> --json state -q '.state'
+  ```
 
 ## 出力フォーマット
 
