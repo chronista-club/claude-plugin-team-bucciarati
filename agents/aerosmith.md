@@ -85,6 +85,7 @@ Issue #N → Sticky Fingers → (Moody Blues →) Gold Experience → Issue Clos
 
 ## Issue コンテキスト
 
+### GitHub Issues
 ユーザーが Issue 番号を指定した場合（例: `#239 をやって`）、パイプライン全体で Issue コンテキストを引き回す:
 
 ```bash
@@ -97,6 +98,16 @@ Issue コンテキストがある場合:
 - **完了時**: パイプラインの最終ステップで `gh issue close` を実行
 
 Issue コンテキストは各スタンドに引き継ぐ（prompt に含める）。
+
+### Linear Issues（オプショナル）
+ユーザーが Linear Issue ID を指定した場合（例: `VP-9 をやって`）、Linear MCP が利用可能であれば連携する。
+Linear がなくてもパイプラインは動作する（Linear 連携は全てベストエフォート）。
+
+- **Issue 取得**: `get_issue(id: "VP-9")` で内容を把握
+- **ステータス更新**: 実装開始時に `save_issue(id: "VP-9", state: "In Progress")`
+- **完了時**: `save_issue(id: "VP-9", state: "Done")`
+- **Release リンク**: リリース後に `save_issue(id: "VP-9", links: [{url: "リリースURL", title: "Release vX.Y.Z"}])`
+- **PR リンク**: PR 作成後に `Closes VP-9` を PR body に含める（Linear の GitHub 連携で自動クローズ）
 
 ## 実行フロー
 
@@ -130,12 +141,23 @@ git log --oneline -5
 
 パイプラインの最終ステップが成功した場合、Issue を閉じる:
 
+**GitHub Issues:**
 ```bash
 gh issue close <N> --comment "Completed via pipeline: PR #<PR番号> merged"
 ```
 
 - Sticky Fingers がマージ時に `Closes #N` で自動クローズされる場合は不要
 - Gold Experience（デプロイ）が最終ステップの場合、デプロイ成功後にクローズ
+
+**Linear Issues（MCP 利用可能な場合）:**
+```
+save_issue(id: "VP-9", state: "Done")
+save_issue(id: "VP-9", links: [{url: "Release URL", title: "Release vX.Y.Z"}])
+```
+
+- ステータス → Done
+- Release リンクを attachment として紐づけ
+- Linear MCP が使えない場合はスキップ（エラーにしない）
 
 ### Step 4: 完了報告
 
@@ -144,6 +166,7 @@ gh issue close <N> --comment "Completed via pipeline: PR #<PR番号> merged"
 
 ### Issue
 #239 ローカル開発環境のセットアップ自動化
+（または: VP-9 Stand CLI 体系の整理）
 
 ### Pipeline
 Moody Blues → Sticky Fingers → Gold Experience
@@ -154,6 +177,7 @@ Moody Blues → Sticky Fingers → Gold Experience
 | Moody Blues | SHIP IT | CI all pass, 0 issues |
 | Sticky Fingers | Done | PR #240 merged (Closes #239) |
 | Gold Experience | ALIVE | Health check OK |
+| Linear | Done | VP-9 → Done, Release v0.8.6 linked |
 
 ### Issue: CLOSED
 ### Mission: COMPLETE

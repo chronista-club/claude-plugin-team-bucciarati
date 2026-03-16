@@ -31,11 +31,19 @@ color: blue
 
 Aerosmith やユーザーから Issue 番号が渡された場合、Issue 駆動モードで動作する:
 
+### GitHub Issues
 - **ブランチ命名**: `feat/<Issue番号>-<slug>` (例: `feat/239-local-dev-setup`)
   - Issue タイトルから slug を自動生成（小文字、ハイフン区切り、30文字以内）
   - fix の場合は `fix/<Issue番号>-<slug>`
 - **PR リンク**: PR body に `Closes #<Issue番号>` を自動挿入
 - **マージ後**: `Closes #N` による自動クローズを確認
+
+### Linear Issues（オプショナル）
+Linear Issue ID（例: `VP-9`）が渡された場合、Linear MCP が利用可能であればベストエフォートで連携:
+- **ブランチ命名**: Linear が生成する `mako/{team-key}-XX-...` 形式を使用（`get_issue` で `gitBranchName` を取得）
+- **PR リンク**: PR body に `Closes VP-9` を含める
+- **ステータス**: PR 作成時に `save_issue(id: "VP-9", state: "In Progress")`
+- Linear MCP が使えない場合はスキップ（パイプラインは止めない）
 
 ## パイプライン
 
