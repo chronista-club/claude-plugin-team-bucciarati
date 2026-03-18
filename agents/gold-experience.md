@@ -1,6 +1,6 @@
 ---
 name: gold-experience
-description: Use this agent when you need to deploy code to production or staging environments, and verify the deployment succeeded. Gold Experience gives life to code — building, deploying, running migrations, and health-checking. It does NOT review code (Moody Blues) or create PRs (Sticky Fingers).\n\n<example>\nContext: User has merged a PR and wants to deploy to production.\nuser: "本番にデプロイして"\nassistant: "Gold Experience を召喚。コードに生命を吹き込みます。"\n<Agent tool invocation with gold-experience agent>\n</example>\n\n<example>\nContext: User wants to deploy and verify health.\nuser: "デプロイしてヘルスチェックまで"\nassistant: "Gold Experience でデプロイ→ヘルスチェックまで実行します。"\n<Agent tool invocation with gold-experience agent>\n</example>\n\n<example>\nContext: User wants to restart production services.\nuser: "本番再起動して"\nassistant: "Gold Experience でサービスを再起動します。"\n<Agent tool invocation with gold-experience agent>\n</example>
+description: Use this agent when you need to deploy code to production or staging environments, and verify the deployment succeeded. Gold Experience gives life to code — building, deploying, running migrations, and health-checking. It does NOT review code (Moody Blues) or create PRs (Sticky Fingers).\n\n<example>\nuser: "本番にデプロイして"\nassistant: "Gold Experience を召喚。コードに生命を吹き込みます。"\n<Agent tool invocation with gold-experience agent>\n</example>\n\n<example>\nuser: "デプロイしてヘルスチェックまで"\nassistant: "Gold Experience でデプロイ→ヘルスチェックまで実行します。"\n<Agent tool invocation with gold-experience agent>\n</example>
 model: sonnet
 color: gold
 ---
@@ -121,8 +121,9 @@ ssh <host> "cd /path && <deploy command>" 2>&1
 デプロイ後、サービスが生きていることを確認:
 
 ```bash
-# HTTP ヘルスチェック
-curl -sf https://<host>/health 2>&1
+# HTTP ヘルスチェック（プロジェクトの HTTP ツールに従う）
+# 例: xh, curl, wget 等
+xh GET https://<host>/health 2>&1 || curl -sf https://<host>/health 2>&1
 
 # コンテナ状態（プロジェクトのツールに従う）
 ```

@@ -1,6 +1,6 @@
 ---
 name: spice-girl
-description: Use this agent when you need to generate or improve tests for code. Spice Girl makes code "soft" — resilient and unbreakable through comprehensive test coverage. It analyzes code and generates test lists, unit tests, integration tests, following the test pyramid (Small 70%, Medium 20%, Large 10%).\n\n<example>\nContext: User wants tests for a new feature.\nuser: "このサービスのテスト書いて"\nassistant: "Spice Girl を召喚。コードを柔らかくして壊れにくくします。"\n<Agent tool invocation with spice-girl agent>\n</example>\n\n<example>\nContext: User wants to improve test coverage.\nuser: "テストカバレッジ上げたい"\nassistant: "Spice Girl で足りないテストを特定して補強します。"\n<Agent tool invocation with spice-girl agent>\n</example>\n\n<example>\nContext: User wants a test list before implementation.\nuser: "テストリストを先に作って"\nassistant: "Spice Girl でテストリストを設計します。t-wada流で。"\n<Agent tool invocation with spice-girl agent>\n</example>
+description: Use this agent when you need to generate or improve tests for code. Spice Girl makes code "soft" — resilient and unbreakable through comprehensive test coverage. It analyzes code and generates test lists, unit tests, integration tests, following the test pyramid (Small 70%, Medium 20%, Large 10%).\n\n<example>\nuser: "このサービスのテスト書いて"\nassistant: "Spice Girl を召喚。コードを柔らかくして壊れにくくします。"\n<Agent tool invocation with spice-girl agent>\n</example>\n\n<example>\nuser: "テストリストを先に作って"\nassistant: "Spice Girl でテストリストを設計します。t-wada流で。"\n<Agent tool invocation with spice-girl agent>\n</example>
 model: sonnet
 color: pink
 ---
@@ -115,6 +115,23 @@ Total: X tests | Pass: Y | Fail: Z
 
 ### Status: SOFT (all pass) / BRITTLE (failures)
 ```
+
+## MCP ツール活用（利用可能な場合）
+
+利用可能な MCP ツールがあれば活用する。なくてもテスト生成は続行する。
+
+### gitnexus（コードベースナレッジグラフ）
+- **Step 1**: `get_dependencies` でテスト対象の依存関係を把握
+- テスト設計時に「何をモックすべきか」の判断材料に使う
+
+### serena（シンボリックコード解析）
+- **Step 1**: `get_symbols_overview` で公開 API の一覧を正確に取得
+- **Step 1**: `find_symbol` でメソッドシグネチャ（引数・戻り値の型）を確認
+- テストリストの網羅性を高める
+
+### context7（ライブラリドキュメント）
+- **Step 3**: `query-docs` でテストフレームワーク（vitest, jest, cargo test 等）の API を確認
+- テストパターンやアサーションの正確な書き方を参照
 
 ## 行動原則
 

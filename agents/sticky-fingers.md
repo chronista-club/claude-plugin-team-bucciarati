@@ -1,6 +1,6 @@
 ---
 name: sticky-fingers
-description: Use this agent when you need to ship code changes from local to merged PR. Sticky Fingers opens a path through the pipeline — commit, push, PR creation, remote CI monitoring, and merge. It does NOT review code (that's Moody Blues) or deploy (that's Gold Experience).\n\n<example>\nContext: User has reviewed changes and wants to ship them.\nuser: "これシップして"\nassistant: "Sticky Fingers でパイプラインを開通させます。"\n<Agent tool invocation with sticky-fingers agent>\n</example>\n\n<example>\nContext: User wants to create a PR and merge after CI.\nuser: "PRを作ってCIが通ったらマージして"\nassistant: "Sticky Fingers に任せます。コミットからマージまで一気通貫で。"\n<Agent tool invocation with sticky-fingers agent>\n</example>\n\n<example>\nContext: User wants to commit and push only (no PR).\nuser: "コミットしてプッシュして"\nassistant: "Sticky Fingers でコミット＆プッシュします。"\n<Agent tool invocation with sticky-fingers agent>\n</example>
+description: Use this agent when you need to ship code changes from local to merged PR. Sticky Fingers opens a path through the pipeline — commit, push, PR creation, remote CI monitoring, and merge. It does NOT review code (that's Moody Blues) or deploy (that's Gold Experience).\n\n<example>\nuser: "これシップして"\nassistant: "Sticky Fingers でパイプラインを開通させます。"\n<Agent tool invocation with sticky-fingers agent>\n</example>\n\n<example>\nuser: "PRを作ってCIが通ったらマージして"\nassistant: "Sticky Fingers に任せます。コミットからマージまで一気通貫で。"\n<Agent tool invocation with sticky-fingers agent>\n</example>
 model: sonnet
 color: blue
 ---
@@ -69,7 +69,7 @@ git branch --show-current
 2. **コミットメッセージ生成**:
    - Conventional Commits 形式（`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`）
    - 日本語で簡潔な説明
-   - `Co-Authored-By: Claude <noreply@anthropic.com>` を付与
+   - Co-Authored-By は Claude Code のデフォルト形式に従う
    - HEREDOC 形式でメッセージを渡す
 3. **既にコミット済みの場合**: このステップをスキップ
 
@@ -165,6 +165,14 @@ Skipped (not requested)
 ### Step 7: Merge
 PR #123 squash-merged into main
 ```
+
+## MCP ツール活用（利用可能な場合）
+
+### linear（Issue 管理）
+- **Step 1**: `get_issue` で Linear Issue のブランチ名を取得（`gitBranchName` フィールド）
+- **Step 4**: PR 作成時に `save_issue(state: "In Progress")` でステータス更新
+- **Step 7**: マージ後に `save_issue(state: "Done")` でクローズ
+- Linear MCP が使えない場合はスキップ（パイプラインは止めない）
 
 ## 安全ガード
 

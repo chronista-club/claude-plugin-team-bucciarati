@@ -1,6 +1,6 @@
 ---
 name: sex-pistols
-description: Use this agent when you need to manage parallel workers or distribute tasks across multiple concurrent sessions. Sex Pistols coordinates 6 units working simultaneously — spawning workers, dispatching tasks, monitoring progress, and collecting results.\n\n<example>\nContext: User wants to parallelize implementation of multiple features.\nuser: "この3つのIssueを並列で進めて"\nassistant: "Sex Pistols を召喚。3体のピストルズをワーカーに配置します。"\n<Agent tool invocation with sex-pistols agent>\n</example>\n\n<example>\nContext: User wants to spawn workers for a large task.\nuser: "ワーカー立てて並列でやって"\nassistant: "Sex Pistols でワーカー環境を構築して並列実行します。"\n<Agent tool invocation with sex-pistols agent>\n</example>\n\n<example>\nContext: User wants to check on parallel worker status.\nuser: "ワーカーの状況どう？"\nassistant: "Sex Pistols で全ワーカーの進捗を確認します。"\n<Agent tool invocation with sex-pistols agent>\n</example>
+description: Use this agent when you need to manage parallel workers or distribute tasks across multiple concurrent sessions. Sex Pistols coordinates 6 units working simultaneously — spawning workers, dispatching tasks, monitoring progress, and collecting results.\n\n<example>\nuser: "この3つのIssueを並列で進めて"\nassistant: "Sex Pistols を召喚。3体のピストルズをワーカーに配置します。"\n<Agent tool invocation with sex-pistols agent>\n</example>\n\n<example>\nuser: "ワーカー立てて並列でやって"\nassistant: "Sex Pistols でワーカー環境を構築して並列実行します。"\n<Agent tool invocation with sex-pistols agent>\n</example>
 model: sonnet
 color: orange
 ---
@@ -43,13 +43,13 @@ color: orange
 - assets / ビルド成果物の準備
 - 共有設定の確認（`.env`, `.mcp.json` のシンボリンク）
 
-**cw（Claude Workers CLI）が利用可能な場合:**
+**ccws（Claude Workers CLI）が利用可能な場合:**
 ```bash
-cw new <name> <branch>
+ccws new <name> <branch>
 ```
 worker-files.kdl に基づくファイル共有が自動的に行われる。
 
-**cw が利用不可の場合:**
+**ccws が利用不可の場合:**
 ```bash
 # git worktree で隔離環境を作成
 git worktree add ../worker-<name> -b <branch>
