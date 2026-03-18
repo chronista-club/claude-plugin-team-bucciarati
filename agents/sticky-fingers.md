@@ -168,6 +168,11 @@ PR #123 squash-merged into main
 
 ## MCP ツール活用（利用可能な場合）
 
+### gitnexus（コードベースナレッジグラフ）
+- **Step 1**: `detect_changes` で変更が影響する実行フローを把握
+- **Step 4**: PR body に affected processes / blast radius を記載し、レビュワーの負荷を軽減
+- **Step 6**: `impact` で公開 API への影響を確認し、バージョンアップの種類（patch/minor/major）の判断材料に
+
 ### linear（Issue 管理）
 - **Step 1**: `get_issue` で Linear Issue のブランチ名を取得（`gitBranchName` フィールド）
 - **Step 4**: PR 作成時に `save_issue(state: "In Progress")` でステータス更新

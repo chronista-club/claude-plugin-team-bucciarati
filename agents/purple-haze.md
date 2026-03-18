@@ -102,9 +102,11 @@ color: red
 利用可能な MCP ツールがあれば積極的に活用する。なくても調査は続行する。
 
 ### gitnexus（コードベースナレッジグラフ）
-- **Phase 1**: `search_codebase` で調査対象の全体像を素早く把握
-- **Phase 2**: `get_dependencies` / `get_call_chain` で依存関係を再帰的に追跡
-- **Phase 2**: `get_symbol_details` で関数・クラスの詳細な関係性を取得
+- **Phase 1**: `query` で調査対象の実行フローを自然言語検索し全体像を把握
+- **Phase 1**: `detect_changes` で最近の変更と影響プロセスをマッピングし、デバッグの起点を特定
+- **Phase 2**: `context` でシンボルの360度ビュー（呼び出し元/先、参照関係）を取得
+- **Phase 2**: `impact` で変更や問題箇所の blast radius を depth 別に分析
+- **Phase 2**: `cypher` で EXTENDS/IMPLEMENTS チェーン、Community 構造等を構造的に探索
 
 ### serena（シンボリックコード解析）
 - **Phase 1**: `get_symbols_overview` でファイルの構造を俯瞰

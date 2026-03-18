@@ -6,24 +6,31 @@ Team Bucciarati の各スタンドが活用できる MCP ツール。
 ## gitnexus — コードベースナレッジグラフ
 
 Tree-sitter でコードを解析し、依存関係・呼び出しチェーン・シンボル関係をグラフ化。
+事前に `gitnexus analyze` でリポジトリをインデックスする必要がある。
 
 ### セットアップ
 ```bash
-claude mcp add gitnexus -- bunx gitnexus mcp
+bun add -g gitnexus
+node ~/.bun/install/global/node_modules/@ladybugdb/core/install.js  # postinstall 手動実行
+claude mcp add --scope user gitnexus -- gitnexus mcp
+gitnexus analyze  # リポジトリのインデックス作成
 ```
 
-### 主なツール
+### ツール一覧
 | ツール | 用途 |
 |--------|------|
-| `search_codebase` | コードベース全体をセマンティック検索 |
-| `get_symbol_details` | シンボルの詳細（型、依存、呼び出し元/先） |
-| `get_dependencies` | 依存関係グラフの取得 |
-| `get_call_chain` | 関数の呼び出しチェーンを追跡 |
+| `query` | 自然言語/キーワードで実行フローを検索（BM25 + セマンティック） |
+| `context` | シンボルの360度ビュー（呼び出し元/先、参照、プロセス参加） |
+| `impact` | 変更の blast radius 分析（depth 別リスク分類） |
+| `detect_changes` | git diff から影響を受ける実行フローを特定 |
+| `cypher` | Cypher クエリでナレッジグラフを直接検索 |
+| `rename` | グラフベースの安全なリネーム（プレビュー付き） |
+| `list_repos` | インデックス済みリポジトリ一覧 |
 
 ### スタンド別活用
-- **Purple Haze**: 広域リサーチで依存グラフを辿り、影響範囲を特定
-- **Moody Blues**: diff 内シンボルの依存先を確認、変更の影響範囲を検証
-- **Spice Girl**: テスト対象の依存関係を把握し、テスト設計に反映
+- **Purple Haze**: `query` で全体像把握 → `context` でシンボル深堀り → `impact` で影響範囲特定
+- **Moody Blues**: `detect_changes` で diff の影響フロー検出 → `impact` で変更シンボルの blast radius 確認
+- **Spice Girl**: `context` でテスト対象の依存関係把握 → `query` でテスト対象の実行フロー理解
 
 ## serena — シンボリックコード解析
 

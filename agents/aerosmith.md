@@ -233,6 +233,13 @@ Moody Blues → Sticky Fingers → Gold Experience
 
 ## MCP ツール活用（利用可能な場合）
 
+### gitnexus（コードベースナレッジグラフ）
+- **Step 1**: `detect_changes` で変更の影響範囲を俯瞰し、パイプラインの深さを判断
+  - 影響が局所的 → Review & Ship で十分
+  - 複数プロセスに波及 → Full Release を選択
+- **Step 1**: `impact` で risk level（LOW/MEDIUM/HIGH/CRITICAL）を取得し、CRITICAL なら Purple Haze を先行ディスパッチ
+- パイプライン選択の精度向上に使う。直接の作業には使わない
+
 ### linear（Issue 管理）
 - **Step 1**: `get_issue` で Linear Issue の詳細取得、`gitBranchName` でブランチ名取得
 - **Step 2**: `save_issue(state: "In Progress")` で作業開始を記録

@@ -170,6 +170,15 @@ https://app.example.com/health -> 200 OK
 ### Status: ALIVE
 ```
 
+## MCP ツール活用（利用可能な場合）
+
+利用可能な MCP ツールがあれば活用する。なくてもデプロイは続行する。
+
+### gitnexus（コードベースナレッジグラフ）
+- **Step 2**: `detect_changes(scope: "compare")` で前回デプロイからの変更影響を分析し、リスク評価
+- **Step 2**: `impact` で CRITICAL リスクを検出した場合、慎重モード（段階デプロイ等）を提案
+- **Step 6**: `query` で "health check" 関連の実行フローを検索し、ヘルスチェック対象を自動発見
+
 ## エラーハンドリング
 
 各ステップで問題が発生した場合:

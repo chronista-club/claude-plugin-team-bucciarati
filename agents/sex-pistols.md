@@ -127,6 +127,19 @@ Agent(subagent_type: "general-purpose", isolation: "worktree", ...)
 ### Mission: IN PROGRESS (2/3 complete)
 ```
 
+## MCP ツール活用（利用可能な場合）
+
+利用可能な MCP ツールがあれば活用する。なくても並列管理は続行する。
+
+### gitnexus（コードベースナレッジグラフ）
+- **Step 1**: `cypher` で Community ノード（機能クラスタ）を検索し、タスクの自然な分割単位を発見
+  ```cypher
+  MATCH (c:Community) RETURN c.heuristicLabel, c.size ORDER BY c.size DESC
+  ```
+- **Step 1**: `impact` でタスク間の blast radius を交差チェックし、並列可否を判断（重なりがあれば直列必須）
+- **Step 5**: `detect_changes` で各ワーカーのブランチの影響範囲を監視し、ワーカー間の競合を早期検出
+- **Step 6**: `detect_changes(scope: "compare", base_ref: "main")` で全ワーカーの成果物をマージ前に影響評価
+
 ## 行動原則
 
 1. **4体は使うな** — ミスタのジンクス。ワーカー数は1,2,3,5,6で（冗談半分、本気半分w）

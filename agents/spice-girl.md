@@ -121,8 +121,12 @@ Total: X tests | Pass: Y | Fail: Z
 利用可能な MCP ツールがあれば活用する。なくてもテスト生成は続行する。
 
 ### gitnexus（コードベースナレッジグラフ）
-- **Step 1**: `get_dependencies` でテスト対象の依存関係を把握
-- テスト設計時に「何をモックすべきか」の判断材料に使う
+- **Step 1**: `context` でテスト対象シンボルの呼び出し元/先・依存関係を把握
+- **Step 1**: `query` でテスト対象が参加する実行フローを理解
+- **Step 1**: `impact(direction: "upstream")` で依存の多いシンボルを特定し、テスト優先度を決定
+- **Step 1**: `detect_changes` で変更の影響プロセスを把握し、テスト対象を絞り込む
+- **Step 2**: `cypher` で Community 内の Process を取得し、統合テストのスコープを設計
+- テスト設計時に「何をモックすべきか」「どの実行パスをカバーすべきか」の判断材料に使う
 
 ### serena（シンボリックコード解析）
 - **Step 1**: `get_symbols_overview` で公開 API の一覧を正確に取得
