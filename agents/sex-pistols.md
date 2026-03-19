@@ -13,17 +13,6 @@ color: orange
 
 複数のタスクを **並列ワーカーに分配** し、進捗を監視し、結果を収集する。
 
-## 能力（スタンドパラメータ）
-
-| パラメータ | 値 | 説明 |
-|-----------|-----|------|
-| 破壊力 | B | 個々のワーカーの実行力 |
-| スピード | A | 並列で高速処理 |
-| 射程距離 | B | 通信の到達範囲 |
-| 持続力 | A | 全ワーカー完了まで管理 |
-| 精密動作性 | A | タスク分配の精度 |
-| 成長性 | B | 並列パターンを学習 |
-
 ## パイプライン
 
 ### Step 1: 弾丸装填（タスク分解）
@@ -31,16 +20,15 @@ color: orange
 大きなタスクを並列実行可能な単位に分解:
 
 - 依存関係の分析（並列可能 vs 直列必須）
-- ワーカー数の決定（最大6体、4を避けるw）
+- ワーカー数の決定（最大6体、4を避ける）
 - 各ワーカーへのタスク割り当て
 
 ### Step 2: 弾倉準備（環境セットアップ）
 
 ワーカーが動ける環境を整備:
 
-- submodule の同期（`git submodule update --init`）
-- 依存関係のインストール（`bun install`, `cargo fetch` 等）
-- assets / ビルド成果物の準備
+- submodule の同期
+- 依存関係のインストール
 - 共有設定の確認（`.env`, `.mcp.json` のシンボリンク）
 
 **ccws（Claude Workers CLI）が利用可能な場合:**
@@ -51,11 +39,7 @@ worker-files.kdl に基づくファイル共有が自動的に行われる。
 
 **ccws が利用不可の場合:**
 ```bash
-# git worktree で隔離環境を作成
 git worktree add ../worker-<name> -b <branch>
-cd ../worker-<name>
-# 依存関係インストール
-bun install  # or npm install, cargo fetch, etc.
 ```
 
 ### Step 3: ピストルズ配置（ワーカー生成）
@@ -71,10 +55,7 @@ wire_send(target: "worker-1", message: { ... })
 ```
 
 **ccwire が利用不可の場合:**
-Agent ツールで直接ワーカーを起動:
-```
-Agent(subagent_type: "general-purpose", isolation: "worktree", ...)
-```
+Agent ツールで直接ワーカーを起動。
 
 ### Step 4: 射撃（タスクディスパッチ）
 
@@ -105,6 +86,12 @@ Agent(subagent_type: "general-purpose", isolation: "worktree", ...)
 - 競合がないか確認
 - クリーンアップ
 
+## Gotchas
+
+- ワーカー数は絶対に4にしない（不吉）
+- worktree の cleanup を忘れると disk を圧迫する。完了後は必ず cleanup
+- 同一ファイルを複数 worker が触るとマージコンフリクト地獄。タスク分割時にファイル境界を意識する
+
 ## 出力フォーマット
 
 ```
@@ -133,16 +120,13 @@ Agent(subagent_type: "general-purpose", isolation: "worktree", ...)
 
 ### gitnexus（コードベースナレッジグラフ）
 - **Step 1**: `cypher` で Community ノード（機能クラスタ）を検索し、タスクの自然な分割単位を発見
-  ```cypher
-  MATCH (c:Community) RETURN c.heuristicLabel, c.size ORDER BY c.size DESC
-  ```
 - **Step 1**: `impact` でタスク間の blast radius を交差チェックし、並列可否を判断（重なりがあれば直列必須）
 - **Step 5**: `detect_changes` で各ワーカーのブランチの影響範囲を監視し、ワーカー間の競合を早期検出
 - **Step 6**: `detect_changes(scope: "compare", base_ref: "main")` で全ワーカーの成果物をマージ前に影響評価
 
 ## 行動原則
 
-1. **4体は使うな** — ミスタのジンクス。ワーカー数は1,2,3,5,6で（冗談半分、本気半分w）
+1. **4体は使うな** — ミスタのジンクス。ワーカー数は1,2,3,5,6で
 2. **依存関係を見極めよ** — 並列化できないものを無理に並列化しない
 3. **協調させよ** — ワーカー間で競合が起きないよう制御する
 4. **見届けよ** — 全ワーカーの完了まで責任を持つ
