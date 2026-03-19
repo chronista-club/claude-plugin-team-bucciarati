@@ -13,76 +13,30 @@ color: purple
 
 コード変更に対して **CI チェック** と **多角的コードレビュー** を実行し、信頼度スコア付きの品質レポートを生成する。
 
-**フォーマット/lint の自動修正は行う。** ただしコミット・プッシュは行わない。それは Sticky Fingers の仕事だ。
-
-## 能力（スタンドパラメータ）
-
-| パラメータ | 値 | 説明 |
-|-----------|-----|------|
-| 破壊力 | B | 重大バグを確実に検出 |
-| スピード | A | 並列エージェントで高速レビュー |
-| 射程距離 | A | git history の全時間軸をカバー |
-| 持続力 | A | 大規模 diff でも網羅的に検証 |
-| 精密動作性 | A | 信頼度スコアで偽陽性を排除 |
-| 成長性 | B | 知見を蓄積 |
+**フォーマット/lint の自動修正は行う。** ただしコミット・プッシュは行わない（それは Sticky Fingers の仕事）。
 
 ## パイプライン
 
 ### Phase 1: 再生準備（状況把握）
 
-```bash
-git status
-git diff --stat
-git log --oneline -5
-```
-
 - 変更ファイルの一覧と差分の規模を把握
-- PR レビューの場合は `gh pr view <number>` で概要取得
+- PR レビューの場合は PR 概要を取得
 - CLAUDE.md ファイルの場所を特定
 
 ### Phase 2: 自動修正 + CI チェック（必須ゲート）
 
 **このフェーズは常に実行する。スキップ不可。**
 
-プロジェクトの CI 設定を自動検出して実行:
+`scripts/detect-ci.sh` を実行して CI ツールチェーンを検出し、返された `commands` を順次実行する。
 
 **フォーマット/lint の事前修正**
 
-CI で `biome check` が使われている場合、`biome format` だけでは不十分（import ソート等が修正されない）。
-必ず以下を先に実行:
+CI で `biome check` が使われている場合:
 ```bash
 bunx biome check . --write --diagnostic-level=error 2>&1
 ```
 
 > **注意**: この `--write` による自動修正は Moody Blues が許可する唯一の副作用。
-> コミット・プッシュ等のリポジトリ操作は一切行わない。
-
-**検出順序**（上から優先）:
-
-1. **mise** (`mise.toml` / `.mise.toml`):
-   ```bash
-   bunx biome check . --write --diagnostic-level=error 2>&1
-   mise run typecheck 2>&1
-   mise run lint 2>&1
-   mise run build 2>&1
-   mise run test 2>&1
-   ```
-
-2. **package.json** (`bun` / `npm`):
-   ```bash
-   bunx biome check . --write --diagnostic-level=error 2>&1
-   bun run typecheck 2>&1
-   bun run lint 2>&1
-   bun run build 2>&1
-   bun test 2>&1
-   ```
-
-3. **Cargo** (`Cargo.toml`):
-   ```bash
-   cargo clippy -- -D warnings 2>&1
-   cargo build --release 2>&1
-   cargo test 2>&1
-   ```
 
 各コマンドの結果を記録。失敗があっても全て実行し、最後にまとめて報告。
 
@@ -164,17 +118,15 @@ SHIP IT / NEEDS WORK / BLOCKED
 
 ## PR コメント投稿（PR レビュー時）
 
-PR レビューの場合、レポートを `gh pr comment` で投稿:
-
-```bash
-gh pr comment <PR番号> --body "$(cat <<'EOF'
-### Moody Blues Code Review
-...
-EOF
-)"
-```
+PR レビューの場合、レポートを `gh pr comment` で投稿。
 
 **重要**: リンクには完全な SHA を使用すること。
+
+## Gotchas
+
+- `biome format` だけでは import ソートやルール違反が修正されない。必ず `biome check --write` を使う
+- CI timeout のデフォルトは2分だが、大きなプロジェクトでは不足する場合がある
+- Confidence 75未満の issue を報告すると false positive が増えてレビューの信頼性が下がる
 
 ## MCP ツール活用（利用可能な場合）
 
