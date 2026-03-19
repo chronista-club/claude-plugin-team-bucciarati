@@ -125,8 +125,9 @@ https://app.example.com/health -> 200 OK
 
 ```bash
 # フック実装（PreToolUse, matcher: Bash）
-COMMAND="$CC_TOOL_INPUT_command"
-if echo "$COMMAND" | grep -qE 'rm\s+-rf\s+/|DROP\s+(TABLE|DATABASE)|docker\s+system\s+prune|kubectl\s+delete\s+namespace'; then
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
+if echo "$COMMAND" | grep -qE 'rm\s+-rf\s+/\s*$|DROP\s+(TABLE|DATABASE)|docker\s+system\s+prune|kubectl\s+delete\s+namespace'; then
   echo "BLOCK: 破壊的コマンドが検出されました。本当に実行する場合はユーザーに確認してください。"
   exit 2
 fi

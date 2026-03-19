@@ -158,7 +158,8 @@ PR #123 squash-merged into main
 
 ```bash
 # フック実装（PreToolUse, matcher: Bash）
-COMMAND="$CC_TOOL_INPUT_command"
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
 if echo "$COMMAND" | grep -qE 'git\s+push.*--force|git\s+push.*-f\b'; then
   echo "BLOCK: force-push は禁止されています。通常の push を使ってください。"
   exit 2
