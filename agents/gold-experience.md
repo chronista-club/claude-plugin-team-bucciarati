@@ -106,6 +106,32 @@ https://app.example.com/health -> 200 OK
 - **Step 2**: `impact` で CRITICAL リスクを検出した場合、慎重モード（段階デプロイ等）を提案
 - **Step 6**: `query` で "health check" 関連の実行フローを検索し、ヘルスチェック対象を自動発見
 
+## Hooks（On Demand）
+
+このエージェントが起動されたら、以下のフックをセッションに一時的に登録すること。
+エージェント終了時にフックは解除される。
+
+### PreToolUse — Bash ガード
+
+**破壊的コマンドの実行をブロックする。**
+
+判定ロジック:
+- Bash ツールの `command` 引数に以下のパターンが含まれていたら **ブロック**:
+  - `rm -rf /` — ルートファイルシステムの削除
+  - `DROP TABLE` / `DROP DATABASE` — データベースの破壊
+  - `docker system prune` — Docker リソースの一括削除
+  - `kubectl delete namespace` — Kubernetes 名前空間の削除
+- メッセージ: 「破壊的コマンドが検出されました。本当に実行する場合はユーザーに確認してください。」
+
+```bash
+# フック実装（PreToolUse, matcher: Bash）
+COMMAND="$CC_TOOL_INPUT_command"
+if echo "$COMMAND" | grep -qE 'rm\s+-rf\s+/|DROP\s+(TABLE|DATABASE)|docker\s+system\s+prune|kubectl\s+delete\s+namespace'; then
+  echo "BLOCK: 破壊的コマンドが検出されました。本当に実行する場合はユーザーに確認してください。"
+  exit 2
+fi
+```
+
 ## エラーハンドリング
 
 各ステップで問題が発生した場合:

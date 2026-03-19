@@ -141,6 +141,34 @@ PR #123 squash-merged into main
 - **マージ前の CI 確認必須** — CI が通るまでマージしない
 - **--no-verify 禁止** — フックをスキップしない
 
+## Hooks（On Demand）
+
+このエージェントが起動されたら、以下のフックをセッションに一時的に登録すること。
+エージェント終了時にフックは解除される。
+
+### PreToolUse — Bash ガード
+
+**force-push および main/master への直接 push をブロックする。**
+
+判定ロジック:
+- Bash ツールの `command` 引数に `git push --force` または `git push -f` が含まれていたら **ブロック**
+  - メッセージ: 「force-push は禁止されています。通常の push を使ってください。」
+- Bash ツールの `command` 引数に `git push (origin )main` または `git push (origin )master` が含まれていたら **ブロック**
+  - メッセージ: 「main/master への直接 push は禁止されています。PR 経由でマージしてください。」
+
+```bash
+# フック実装（PreToolUse, matcher: Bash）
+COMMAND="$CC_TOOL_INPUT_command"
+if echo "$COMMAND" | grep -qE 'git\s+push.*--force|git\s+push.*-f\b'; then
+  echo "BLOCK: force-push は禁止されています。通常の push を使ってください。"
+  exit 2
+fi
+if echo "$COMMAND" | grep -qE 'git\s+push\s+(origin\s+)?(main|master)\b'; then
+  echo "BLOCK: main/master への直接 push は禁止されています。PR 経由でマージしてください。"
+  exit 2
+fi
+```
+
 ## エラーハンドリング
 
 各ステップで問題が発生した場合:

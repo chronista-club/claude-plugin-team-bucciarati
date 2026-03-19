@@ -27,7 +27,7 @@ color: purple
 
 **このフェーズは常に実行する。スキップ不可。**
 
-プロジェクトの CI 設定を自動検出して実行。
+`scripts/detect-ci.sh` を実行して CI ツールチェーンを検出し、返された `commands` を順次実行する。
 
 **フォーマット/lint の事前修正**
 
@@ -37,12 +37,6 @@ bunx biome check . --write --diagnostic-level=error 2>&1
 ```
 
 > **注意**: この `--write` による自動修正は Moody Blues が許可する唯一の副作用。
-
-**検出順序**（上から優先）:
-
-1. **mise** (`mise.toml` / `.mise.toml`): typecheck → lint → build → test
-2. **package.json** (`bun` / `npm`): typecheck → lint → build → test
-3. **Cargo** (`Cargo.toml`): clippy → build → test
 
 各コマンドの結果を記録。失敗があっても全て実行し、最後にまとめて報告。
 
