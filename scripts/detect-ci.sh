@@ -52,10 +52,5 @@ else
   exit 0
 fi
 
-# JSON 出力
-printf '{"runner":"%s","commands":[' "$RUNNER"
-for i in "${!CMDS[@]}"; do
-  [ "$i" -gt 0 ] && printf ','
-  printf '"%s"' "${CMDS[$i]}"
-done
-printf ']}\n'
+# JSON 出力（jq で安全にシリアライズ）
+jq -n --arg runner "$RUNNER" --args '{"runner": $runner, "commands": $ARGS.positional}' -- "${CMDS[@]}"
