@@ -29,4 +29,5 @@ skills/             # スキル定義 (team-bucciarati)
 - スキルは `skills/<name>/SKILL.md` に配置
 - コマンドは `commands/*.md` に配置
 - バージョンは `.claude-plugin/plugin.json` で管理
+- リリース時は `marketplace.json` の version も同期すること
 - コミットメッセージは日本語
