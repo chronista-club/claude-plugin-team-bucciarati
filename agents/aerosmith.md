@@ -68,12 +68,13 @@ Gold Experience
 
 ### Issue Pipeline（Issue 起点のエンドツーエンド）
 ```
-Issue #N → (実装) → Moody Blues → Sticky Fingers → (Gold Experience) → Issue Close
-  起点   → ユーザー →  品質検証  →  シッピング   →    デプロイ       →  完了
+Issue #N → (実装) → (Moody Blues) → Sticky Fingers → (Gold Experience) → Issue Close
+  起点   → ユーザー → 品質検証(任意) →  シッピング   →   デプロイ(任意)  →  完了
 ```
 
 > **注意**: Issue Pipeline の「実装」フェーズはユーザーまたは別途指定されたエージェントが担当。
 > Aerosmith は実装完了後のパイプライン（レビュー→シップ→デプロイ）を統率する。
+> Moody Blues と Gold Experience は任意。変更が軽微な場合はスキップ可能。
 
 ## スタンド間コンテキスト引き継ぎ
 

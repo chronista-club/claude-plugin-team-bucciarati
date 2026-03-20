@@ -42,12 +42,27 @@ worker-files.kdl に基づくファイル共有が自動的に行われる。
 git worktree add ../worker-<name> -b <branch>
 ```
 
+**VP TUI が起動中の場合:**
+```bash
+# Worker 環境で SP デーモンを起動
+vp process start --dir ~/.local/share/ccws/<name>
+```
+→ TUI で `Ctrl+Shift+T` して Worker タブを追加。Lead はタブ切替（`Ctrl+1-9`）で Worker の PP を確認できる。
+
 ### Step 3: ピストルズ配置（ワーカー生成）
 
 各ワーカーに:
 - 独立したブランチを割り当て
 - タスクの詳細指示を送信
-- 実行モード指定（relay or autonomous）
+- 実行モード指定（下記3モードから選択）
+
+#### Worker モード
+
+| モード | ccwire パターン | PP 表示 | ユースケース |
+|--------|----------------|---------|------------|
+| 🎵 autonomous（指揮者） | 自走。完了報告のみ | ステータス1行 | 小タスク: バグ修正、テスト追加 |
+| 🎬 relay（監督） | 節目ごとに報告。質問は wire_send | 進捗ログ + 設計メモ + diff | 中タスク: 設計判断が出てきそう |
+| 🤝 pair（ペアプロ） | 双方向対話 | 共有ワークスペース + 対話ログ | 大トピック: 別系統の新機能 |
 
 **ccwire が利用可能な場合:**
 ```
@@ -61,12 +76,15 @@ Agent ツールで直接ワーカーを起動。
 
 ワーカーにタスクを送信:
 
-```
+```json
 {
-  task: "Issue #XXX の実装",
-  branch: "feat/xxx",
-  mode: "autonomous",
-  context: "..."
+  "type": "task",
+  "issue": "NEX-12",
+  "title": "ユーザー認証のリファクタリング",
+  "mode": "relay",
+  "branch": "mako/nex-12-auth-refactor",
+  "context": "verify_token を async に変更",
+  "acceptance": ["テストが通る", "既存 API に breaking change なし"]
 }
 ```
 
@@ -74,9 +92,33 @@ Agent ツールで直接ワーカーを起動。
 
 定期的にワーカーの状態を確認:
 
-- ワーカーからの質問に回答（relay モード）
+- ワーカーからの質問に回答（relay / pair モード）
 - 進捗をユーザーに報告
 - 問題があればワーカーに追加指示
+
+**Worker → Lead メッセージ型:**
+
+| type | 内容 |
+|------|------|
+| `progress` | 進捗報告（completed, current, remaining, diff_summary） |
+| `question` | 質問（question, options, context） |
+| `done` | 完了報告（summary, diff_summary, pr_ready） |
+
+**VP TUI が起動中の場合:**
+Worker は `vp pane show` で自分の PP ペインに進捗を表示。Lead はタブ切替で確認。
+
+PP 表示例（relay モード）:
+```
+**Task: NEX-12** | Mode: 🎬 監督
+Branch: mako/nex-12-auth-refactor
+───────────────────────
+**Progress:**
+✅ auth/handler.rs 読了
+🔨 handler.rs リファクタ中
+⬚ テスト作成
+───────────────────────
+**Diff: +42 -18 (2 files)**
+```
 
 ### Step 6: 着弾確認（結果収集）
 
@@ -84,7 +126,7 @@ Agent ツールで直接ワーカーを起動。
 
 - 各ワーカーの成果物（PR）を一覧化
 - 競合がないか確認
-- クリーンアップ
+- クリーンアップ（`ccws cleanup` / worktree 削除 / TUI タブ閉じる）
 
 ## Gotchas
 

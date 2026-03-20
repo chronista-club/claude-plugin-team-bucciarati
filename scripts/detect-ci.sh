@@ -10,14 +10,16 @@ cd "$ROOT"
 if [ -f "mise.toml" ] || [ -f ".mise.toml" ]; then
   RUNNER="mise"
   CMDS=()
-  # mise tasks から利用可能なタスクを検出
+  # mise tasks から利用可能なタスクを検出（JSON 出力で安全にパース）
+  AVAILABLE_TASKS=$(mise task ls --json 2>/dev/null | jq -r '.[].name' 2>/dev/null || mise task ls 2>/dev/null | awk '{print $1}' || echo "")
   for task in typecheck lint build test; do
-    if mise task ls 2>/dev/null | grep -q "^$task"; then
+    if echo "$AVAILABLE_TASKS" | grep -qx "$task"; then
       CMDS+=("mise run $task")
     fi
   done
+  # フォールバック: タスクが1つも見つからない場合は test のみ（安全な最小セット）
   if [ ${#CMDS[@]} -eq 0 ]; then
-    CMDS=("mise run typecheck" "mise run lint" "mise run build" "mise run test")
+    CMDS=("mise run test")
   fi
 elif [ -f "Cargo.toml" ]; then
   RUNNER="cargo"

@@ -1,11 +1,12 @@
 {
   "name": "team-bucciarati",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "JoJo Part 5 Stand-themed agent team for software development pipelines",
   "author": {
     "name": "Mako",
     "email": "mito@chronista.club"
   },
   "repository": "https://github.com/chronista-club/claude-plugin-team-bucciarati",
+  "license": "MIT",
   "keywords": ["agents", "pipeline", "jojo", "team", "orchestration"]
 }
