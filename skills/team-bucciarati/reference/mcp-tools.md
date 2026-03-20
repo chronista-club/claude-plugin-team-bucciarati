@@ -78,3 +78,18 @@ Linear の Issue・プロジェクト・サイクルを操作。
 ### スタンド別活用
 - **Aerosmith**: Issue Pipeline で Issue コンテキストの取得・ステータス管理
 - **Sticky Fingers**: PR 作成時にステータスを "In Progress" に、マージ後に "Done" に
+
+## Vantage Point CLI（VP TUI 連携時）
+
+VP TUI が起動中の場合、Sex Pistols が Worker 管理に使用する。
+
+### 主なコマンド
+| コマンド | 用途 |
+|---------|------|
+| `vp process start --dir <path>` | 指定ディレクトリで SP デーモンを起動。TUI にタブとして追加可能に |
+| `vp pane show --content <text>` | PP ペインにコンテンツを表示（markdown/html/log/url） |
+| `vp pane clear` | PP ペインをクリア |
+| `vp pane show --target <name>` | 特定プロジェクト（Worker）の PP に表示 |
+
+### スタンド別活用
+- **Sex Pistols**: Worker 環境で `vp process start` → TUI タブ追加。Worker が `vp pane show` で進捗表示

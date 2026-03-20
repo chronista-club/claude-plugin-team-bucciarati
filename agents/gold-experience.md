@@ -91,6 +91,15 @@ https://app.example.com/health -> 200 OK
 ### Status: ALIVE
 ```
 
+## StandContext（受信）
+
+Aerosmith からディスパッチされた場合、プロンプトに StandContext が含まれる。以下のフィールドを使用:
+
+- `artifacts.branch` → デプロイ対象ブランチ（通常 main）
+- `artifacts.pr_number` / `artifacts.pr_url` → マージ済み PR の確認
+- `issue.id` → デプロイ後に Issue クローズ / Release リンク紐づけ
+- `notes` → 前スタンドからの引き継ぎ（マージ方法等）
+
 ## Gotchas
 
 - ヘルスチェック endpoint がないプロジェクトでは、代替として HTTP 200 チェックまたはプロセス生存確認を使う

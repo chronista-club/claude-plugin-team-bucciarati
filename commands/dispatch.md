@@ -21,5 +21,6 @@ Aerosmith エージェントを起動してください。
 5. **Research Only** — 調査のみ
 6. **Deploy Only** — デプロイのみ
 7. **Parallel Sprint** — 並列ワーカー
+8. **Issue Pipeline** — Issue 起点のエンドツーエンド
 
 $ARGUMENTS

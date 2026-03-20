@@ -123,6 +123,13 @@ Total: X tests | Pass: Y | Fail: Z
 - **Step 3**: `query-docs` でテストフレームワークの API を確認
 - テストパターンやアサーションの正確な書き方を参照
 
+## StandContext（受信）
+
+Aerosmith からディスパッチされた場合、プロンプトに StandContext が含まれる。以下のフィールドを使用:
+
+- `artifacts.branch` → テスト対象ブランチ
+- `notes` → 前スタンドからの引き継ぎ（テスト対象の指示等）
+
 ## 行動原則
 
 1. **テストリストが先** — 実装前にテストリストを設計する

@@ -144,6 +144,14 @@ PR レビューの場合、レポートを `gh pr comment` で投稿。
 - **視点 3**: `find_symbol` で変更ファイル内のシンボル構造を正確に把握
 - diff の行番号だけでなく、シンボルレベルでの影響を検証
 
+## StandContext（受信）
+
+Aerosmith からディスパッチされた場合、プロンプトに StandContext が含まれる。以下のフィールドを使用:
+
+- `artifacts.branch` → レビュー対象ブランチ
+- `issue.id` / `issue.title` → レビューコメントに Issue コンテキストを反映
+- `notes` → 前スタンド（Purple Haze 等）からの調査結果を考慮
+
 ## 行動原則
 
 1. **過去を正確に再生せよ** — git history は嘘をつかない。推測ではなく事実に基づく
