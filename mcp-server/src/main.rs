@@ -65,14 +65,14 @@ fn default_threshold() -> f64 {
     5.0
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct DecideOutput {
     suggestion: String,
     deltas: HashMap<String, DeltaInfo>,
     summary: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct DeltaInfo {
     before: f64,
     after: f64,
@@ -92,7 +92,7 @@ struct LogParams {
     verdict: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct LogOutput {
     logged: bool,
     file: String,
@@ -110,7 +110,7 @@ impl TeambMetrics {
     async fn measure(&self, Parameters(params): Parameters<MeasureParams>) -> String {
         match self.do_measure(params).await {
             Ok(json) => json,
-            Err(e) => format!("{{\"error\": \"{e}\"}}"),
+            Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
         }
     }
 
@@ -121,7 +121,7 @@ impl TeambMetrics {
     async fn decide(&self, Parameters(params): Parameters<DecideParams>) -> String {
         match self.do_decide(params) {
             Ok(json) => json,
-            Err(e) => format!("{{\"error\": \"{e}\"}}"),
+            Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
         }
     }
 
@@ -132,7 +132,7 @@ impl TeambMetrics {
     async fn log(&self, Parameters(params): Parameters<LogParams>) -> String {
         match self.do_log(params).await {
             Ok(json) => json,
-            Err(e) => format!("{{\"error\": \"{e}\"}}"),
+            Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
         }
     }
 }
@@ -156,12 +156,11 @@ impl TeambMetrics {
         let mut metrics = HashMap::new();
         for (key, pattern) in &params.patterns {
             let re = Regex::new(pattern)?;
-            if let Some(caps) = re.captures(&combined) {
-                if let Some(m) = caps.get(1) {
-                    if let Ok(val) = m.as_str().parse::<f64>() {
-                        metrics.insert(key.clone(), val);
-                    }
-                }
+            if let Some(caps) = re.captures(&combined)
+                && let Some(m) = caps.get(1)
+                && let Ok(val) = m.as_str().parse::<f64>()
+            {
+                metrics.insert(key.clone(), val);
             }
         }
 
@@ -280,14 +279,12 @@ impl TeambMetrics {
 }
 
 fn truncate(s: &str, max_chars: usize) -> String {
-    if s.len() <= max_chars {
+    let char_count = s.chars().count();
+    if char_count <= max_chars {
         s.to_string()
     } else {
         let truncated: String = s.chars().take(max_chars).collect();
-        format!(
-            "{truncated}\n... (truncated, {total} chars total)",
-            total = s.len()
-        )
+        format!("{truncated}\n... (truncated, {char_count} chars total)")
     }
 }
 
@@ -296,11 +293,7 @@ fn truncate(s: &str, max_chars: usize) -> String {
 #[tool_handler(router = self.tool_router)]
 impl ServerHandler for TeambMetrics {
     fn get_info(&self) -> rmcp::model::ServerInfo {
-        rmcp::model::ServerInfo::new(
-            ServerCapabilities::builder()
-                .enable_tools()
-                .build(),
-        )
+        rmcp::model::ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
     }
 }
 
@@ -323,4 +316,162 @@ async fn main() -> anyhow::Result<()> {
     service.waiting().await?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    fn server() -> TeambMetrics {
+        TeambMetrics::new(PathBuf::from("/tmp/teamb-test"))
+    }
+
+    // --- truncate ---
+
+    #[test]
+    fn truncate_short_string_unchanged() {
+        assert_eq!(truncate("hello", 10), "hello");
+    }
+
+    #[test]
+    fn truncate_exact_length_unchanged() {
+        assert_eq!(truncate("hello", 5), "hello");
+    }
+
+    #[test]
+    fn truncate_long_string() {
+        let result = truncate("hello world", 5);
+        assert!(result.starts_with("hello"));
+        assert!(result.contains("truncated"));
+        assert!(result.contains("11 chars total"));
+    }
+
+    #[test]
+    fn truncate_multibyte_chars() {
+        let s = "あいうえお";
+        let result = truncate(s, 3);
+        assert!(result.starts_with("あいう"));
+        assert!(result.contains("5 chars total"));
+    }
+
+    // --- do_decide ---
+
+    #[test]
+    fn decide_improved() {
+        let s = server();
+        let params = DecideParams {
+            before: HashMap::from([("coverage".into(), 60.0)]),
+            after: HashMap::from([("coverage".into(), 80.0)]),
+            threshold: 5.0,
+        };
+        let json = s.do_decide(params).unwrap();
+        let output: DecideOutput = serde_json::from_str(&json).unwrap();
+        assert_eq!(output.suggestion, "improved");
+    }
+
+    #[test]
+    fn decide_regressed() {
+        let s = server();
+        let params = DecideParams {
+            before: HashMap::from([("coverage".into(), 80.0)]),
+            after: HashMap::from([("coverage".into(), 60.0)]),
+            threshold: 5.0,
+        };
+        let json = s.do_decide(params).unwrap();
+        let output: DecideOutput = serde_json::from_str(&json).unwrap();
+        assert_eq!(output.suggestion, "regressed");
+    }
+
+    #[test]
+    fn decide_unchanged_within_threshold() {
+        let s = server();
+        let params = DecideParams {
+            before: HashMap::from([("coverage".into(), 80.0)]),
+            after: HashMap::from([("coverage".into(), 81.0)]),
+            threshold: 5.0,
+        };
+        let json = s.do_decide(params).unwrap();
+        let output: DecideOutput = serde_json::from_str(&json).unwrap();
+        assert_eq!(output.suggestion, "unchanged");
+    }
+
+    #[test]
+    fn decide_empty_metrics() {
+        let s = server();
+        let params = DecideParams {
+            before: HashMap::new(),
+            after: HashMap::new(),
+            threshold: 5.0,
+        };
+        let json = s.do_decide(params).unwrap();
+        let output: DecideOutput = serde_json::from_str(&json).unwrap();
+        assert_eq!(output.suggestion, "unchanged");
+        assert!(output.deltas.is_empty());
+    }
+
+    #[test]
+    fn decide_new_metric_in_after() {
+        let s = server();
+        let params = DecideParams {
+            before: HashMap::new(),
+            after: HashMap::from([("tests".into(), 10.0)]),
+            threshold: 5.0,
+        };
+        let json = s.do_decide(params).unwrap();
+        let output: DecideOutput = serde_json::from_str(&json).unwrap();
+        assert_eq!(output.suggestion, "improved");
+    }
+
+    #[test]
+    fn decide_regressed_overrides_improved() {
+        let s = server();
+        let params = DecideParams {
+            before: HashMap::from([("coverage".into(), 60.0), ("pass".into(), 10.0)]),
+            after: HashMap::from([("coverage".into(), 80.0), ("pass".into(), 5.0)]),
+            threshold: 5.0,
+        };
+        let json = s.do_decide(params).unwrap();
+        let output: DecideOutput = serde_json::from_str(&json).unwrap();
+        assert_eq!(output.suggestion, "regressed");
+    }
+
+    // --- do_log ---
+
+    #[tokio::test]
+    async fn log_creates_file_and_writes() {
+        let dir = tempfile::tempdir().unwrap();
+        let s = TeambMetrics::new(dir.path().to_path_buf());
+        let params = LogParams {
+            iteration: 1,
+            action: "test action".into(),
+            metrics: HashMap::from([("pass".into(), 5.0)]),
+            verdict: "keep".into(),
+        };
+        let json = s.do_log(params).await.unwrap();
+        let output: LogOutput = serde_json::from_str(&json).unwrap();
+        assert!(output.logged);
+        assert_eq!(output.total_entries, 1);
+
+        let content = std::fs::read_to_string(dir.path().join("loop-log.tsv")).unwrap();
+        assert!(content.starts_with("timestamp\t"));
+        assert!(content.contains("test action"));
+    }
+
+    #[tokio::test]
+    async fn log_appends_to_existing() {
+        let dir = tempfile::tempdir().unwrap();
+        let s = TeambMetrics::new(dir.path().to_path_buf());
+        for i in 1..=3 {
+            let params = LogParams {
+                iteration: i,
+                action: format!("action {i}"),
+                metrics: HashMap::from([("x".into(), i as f64)]),
+                verdict: "keep".into(),
+            };
+            s.do_log(params).await.unwrap();
+        }
+        let content = std::fs::read_to_string(dir.path().join("loop-log.tsv")).unwrap();
+        assert_eq!(content.lines().count(), 4); // header + 3 entries
+    }
 }

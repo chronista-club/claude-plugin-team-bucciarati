@@ -12,7 +12,7 @@
     {
       "name": "team-bucciarati",
       "description": "7 Stand agents (Aerosmith, Purple Haze, Moody Blues, Sticky Fingers, Gold Experience, Sex Pistols, Spice Girl) for orchestrating development pipelines",
-      "version": "1.6.1",
+      "version": "1.7.0",
       "author": {
         "name": "Mako",
         "email": "mito@chronista.club"

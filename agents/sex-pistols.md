@@ -120,6 +120,14 @@ Agent ツールで直接ワーカーを起動。
 ### Mission: IN PROGRESS (2/3 complete)
 ```
 
+## StandContext（受信）
+
+Aerosmith からディスパッチされた場合、プロンプトに StandContext が含まれる。以下のフィールドを使用:
+
+- `artifacts.branch` → ベースブランチ（各ワーカーはここから分岐）
+- `issue.id` / `issue.title` → タスク分解の参考情報
+- `notes` → 前スタンドからの引き継ぎ（並列化の指示等）
+
 ## MCP ツール活用（利用可能な場合）
 
 利用可能な MCP ツール（gitnexus）があれば活用する。なくても並列管理は続行する。詳細は `skills/team-bucciarati/reference/mcp-tools.md` を参照。
