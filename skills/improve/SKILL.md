@@ -11,8 +11,9 @@ allowed-tools:
   - Glob
   - Grep
   - Agent
-  - mcp__teamb-metrics__teamb_measure
-  - mcp__teamb-metrics__teamb_decide
+  - mcp__plugin_team-bucciarati_teamb-metrics__teamb_measure
+  - mcp__plugin_team-bucciarati_teamb-metrics__teamb_decide
+  - mcp__plugin_team-bucciarati_teamb-metrics__teamb_log
   - mcp__teamb-metrics__teamb_log
 ---
 
