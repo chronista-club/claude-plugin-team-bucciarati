@@ -17,19 +17,17 @@ color: blue
 
 ## Issue コンテキスト
 
-### GitHub Issues
-- **ブランチ命名**: `feat/<Issue番号>-<slug>` (例: `feat/239-local-dev-setup`)
-  - Issue タイトルから slug を自動生成（小文字、ハイフン区切り、30文字以内）
-  - fix の場合は `fix/<Issue番号>-<slug>`
-- **PR リンク**: PR body に `Closes #<Issue番号>` を自動挿入
-- **マージ後**: `Closes #N` による自動クローズを確認
-
-### Linear Issues（オプショナル）
-Linear Issue ID（例: `VP-9`）が渡された場合、Linear MCP が利用可能であればベストエフォートで連携:
+### Linear Issues（デフォルト）
+Linear Issue ID（例: `VP-9`）が渡された場合:
 - **ブランチ命名**: Linear が生成する `mako/{team-key}-XX-...` 形式を使用（`get_issue` で `gitBranchName` を取得）
-- **PR リンク**: PR body に `Closes VP-9` を含める
-- **ステータス**: PR 作成時に `save_issue(state: "In Progress")`
+- **PR リンク**: PR body に `Closes VP-9` を含める（Linear の GitHub 連携で自動クローズ）
+- **ステータス**: PR 作成時に `save_issue(state: "In Progress")`、マージ後に `save_issue(state: "Done")`
 - Linear MCP が使えない場合はスキップ（パイプラインは止めない）
+
+### GitHub Issues（レガシー）
+GitHub Issues が有効なリポジトリの場合のみ:
+- **ブランチ命名**: `feat/<Issue番号>-<slug>`
+- **PR リンク**: PR body に `Closes #<Issue番号>` を自動挿入
 
 ## パイプライン
 
@@ -137,16 +135,9 @@ PR #123 squash-merged into main
 
 ## MCP ツール活用（利用可能な場合）
 
-### gitnexus（コードベースナレッジグラフ）
-- **Step 1**: `detect_changes` で変更が影響する実行フローを把握
-- **Step 4**: PR body に affected processes / blast radius を記載し、レビュワーの負荷を軽減
-- **Step 6**: `impact` で公開 API への影響を確認し、バージョンアップの種類（patch/minor/major）の判断材料に
+利用可能な MCP ツール（gitnexus, linear）があれば活用する。詳細は `skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
-### linear（Issue 管理）
-- **Step 1**: `get_issue` で Linear Issue のブランチ名を取得（`gitBranchName` フィールド）
-- **Step 4**: PR 作成時に `save_issue(state: "In Progress")` でステータス更新
-- **Step 7**: マージ後に `save_issue(state: "Done")` でクローズ
-- Linear MCP が使えない場合はスキップ（パイプラインは止めない）
+Linear 連携: `get_issue` でブランチ名取得、PR 作成時に `save_issue(state: "In Progress")`、マージ後に `save_issue(state: "Done")`。使えない場合はスキップ。
 
 ## 安全ガード
 
@@ -158,32 +149,7 @@ PR #123 squash-merged into main
 
 ## Hooks（On Demand）
 
-このエージェントが起動されたら、以下のフックをセッションに一時的に登録すること。
-エージェント終了時にフックは解除される。
-
-### PreToolUse — Bash ガード
-
-**force-push および main/master への直接 push をブロックする。**
-
-判定ロジック:
-- Bash ツールの `command` 引数に `git push --force` または `git push -f` が含まれていたら **ブロック**
-  - メッセージ: 「force-push は禁止されています。通常の push を使ってください。」
-- Bash ツールの `command` 引数に `git push (origin )main` または `git push (origin )master` が含まれていたら **ブロック**
-  - メッセージ: 「main/master への直接 push は禁止されています。PR 経由でマージしてください。」
-
-```bash
-# フック実装（PreToolUse, matcher: Bash）
-INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
-if echo "$COMMAND" | grep -qE 'git\s+push.*--force|git\s+push.*-f\b'; then
-  echo "BLOCK: force-push は禁止されています。通常の push を使ってください。"
-  exit 2
-fi
-if echo "$COMMAND" | grep -qE 'git\s+push\s+(origin\s+)?(main|master)\b'; then
-  echo "BLOCK: main/master への直接 push は禁止されています。PR 経由でマージしてください。"
-  exit 2
-fi
-```
+このエージェントのフック定義は `skills/team-bucciarati/reference/hooks.md` を参照。
 
 ## エラーハンドリング
 
