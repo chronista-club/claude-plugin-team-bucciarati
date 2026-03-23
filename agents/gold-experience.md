@@ -108,39 +108,11 @@ Aerosmith からディスパッチされた場合、プロンプトに StandCont
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツールがあれば活用する。なくてもデプロイは続行する。
-
-### gitnexus（コードベースナレッジグラフ）
-- **Step 2**: `detect_changes(scope: "compare")` で前回デプロイからの変更影響を分析し、リスク評価
-- **Step 2**: `impact` で CRITICAL リスクを検出した場合、慎重モード（段階デプロイ等）を提案
-- **Step 6**: `query` で "health check" 関連の実行フローを検索し、ヘルスチェック対象を自動発見
+利用可能な MCP ツール（gitnexus）があれば活用する。なくてもデプロイは続行する。詳細は `skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 ## Hooks（On Demand）
 
-このエージェントが起動されたら、以下のフックをセッションに一時的に登録すること。
-エージェント終了時にフックは解除される。
-
-### PreToolUse — Bash ガード
-
-**破壊的コマンドの実行をブロックする。**
-
-判定ロジック:
-- Bash ツールの `command` 引数に以下のパターンが含まれていたら **ブロック**:
-  - `rm -rf /` — ルートファイルシステムの削除
-  - `DROP TABLE` / `DROP DATABASE` — データベースの破壊
-  - `docker system prune` — Docker リソースの一括削除
-  - `kubectl delete namespace` — Kubernetes 名前空間の削除
-- メッセージ: 「破壊的コマンドが検出されました。本当に実行する場合はユーザーに確認してください。」
-
-```bash
-# フック実装（PreToolUse, matcher: Bash）
-INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
-if echo "$COMMAND" | grep -qE 'rm\s+-rf\s+/\s*$|DROP\s+(TABLE|DATABASE)|docker\s+system\s+prune|kubectl\s+delete\s+namespace'; then
-  echo "BLOCK: 破壊的コマンドが検出されました。本当に実行する場合はユーザーに確認してください。"
-  exit 2
-fi
-```
+このエージェントのフック定義は `skills/team-bucciarati/reference/hooks.md` を参照。
 
 ## エラーハンドリング
 

@@ -74,19 +74,7 @@ Agent ツールで直接ワーカーを起動。
 
 ### Step 4: 射撃（タスクディスパッチ）
 
-ワーカーにタスクを送信:
-
-```json
-{
-  "type": "task",
-  "issue": "NEX-12",
-  "title": "ユーザー認証のリファクタリング",
-  "mode": "relay",
-  "branch": "mako/nex-12-auth-refactor",
-  "context": "verify_token を async に変更",
-  "acceptance": ["テストが通る", "既存 API に breaking change なし"]
-}
-```
+ワーカーにタスクを送信。タスク指示の JSON フォーマット、Worker → Lead メッセージ型、PP 表示規約は `skills/team-bucciarati/reference/worker-conventions.md` を参照。
 
 ### Step 5: 弾道制御（進捗監視）
 
@@ -95,30 +83,6 @@ Agent ツールで直接ワーカーを起動。
 - ワーカーからの質問に回答（relay / pair モード）
 - 進捗をユーザーに報告
 - 問題があればワーカーに追加指示
-
-**Worker → Lead メッセージ型:**
-
-| type | 内容 |
-|------|------|
-| `progress` | 進捗報告（completed, current, remaining, diff_summary） |
-| `question` | 質問（question, options, context） |
-| `done` | 完了報告（summary, diff_summary, pr_ready） |
-
-**VP TUI が起動中の場合:**
-Worker は `vp pane show` で自分の PP ペインに進捗を表示。Lead はタブ切替で確認。
-
-PP 表示例（relay モード）:
-```
-**Task: NEX-12** | Mode: 🎬 監督
-Branch: mako/nex-12-auth-refactor
-───────────────────────
-**Progress:**
-✅ auth/handler.rs 読了
-🔨 handler.rs リファクタ中
-⬚ テスト作成
-───────────────────────
-**Diff: +42 -18 (2 files)**
-```
 
 ### Step 6: 着弾確認（結果収集）
 
@@ -158,13 +122,7 @@ Branch: mako/nex-12-auth-refactor
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツールがあれば活用する。なくても並列管理は続行する。
-
-### gitnexus（コードベースナレッジグラフ）
-- **Step 1**: `cypher` で Community ノード（機能クラスタ）を検索し、タスクの自然な分割単位を発見
-- **Step 1**: `impact` でタスク間の blast radius を交差チェックし、並列可否を判断（重なりがあれば直列必須）
-- **Step 5**: `detect_changes` で各ワーカーのブランチの影響範囲を監視し、ワーカー間の競合を早期検出
-- **Step 6**: `detect_changes(scope: "compare", base_ref: "main")` で全ワーカーの成果物をマージ前に影響評価
+利用可能な MCP ツール（gitnexus）があれば活用する。なくても並列管理は続行する。詳細は `skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 ## 行動原則
 

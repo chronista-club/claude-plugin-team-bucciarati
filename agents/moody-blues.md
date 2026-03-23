@@ -130,19 +130,7 @@ PR レビューの場合、レポートを `gh pr comment` で投稿。
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツールがあれば活用する。なくてもレビューは続行する。
-
-### gitnexus（コードベースナレッジグラフ）
-- **Phase 1**: `detect_changes` で git diff から影響を受ける実行フローを自動特定
-- **Phase 1**: `query` で変更に関連する実行フローを把握し、レビュー重点箇所を絞り込む
-- **視点 2**: `context` で変更シンボルの呼び出し元/先を確認し、diff 外のバグリスクを検出
-- **視点 3**: `impact` で変更シンボルの blast radius を depth 別に確認（d=1: WILL BREAK）
-- **視点 3**: `cypher` で OVERRIDES チェーンを追跡し、メソッドシグネチャの互換性を検証
-
-### serena（シンボリックコード解析）
-- **視点 2**: `find_referencing_symbols` で変更されたシンボルの参照元を洗い出し
-- **視点 3**: `find_symbol` で変更ファイル内のシンボル構造を正確に把握
-- diff の行番号だけでなく、シンボルレベルでの影響を検証
+利用可能な MCP ツール（gitnexus, serena）があれば活用する。なくてもレビューは続行する。詳細は `skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 ## StandContext（受信）
 

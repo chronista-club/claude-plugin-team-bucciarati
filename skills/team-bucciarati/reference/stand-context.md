@@ -20,8 +20,8 @@ deploy_url: <デプロイ URL>
 ci_status: <PASS / FAIL>
 
 ### Issue
-type: <github / linear>
-id: <Issue 番号 or Linear ID>
+type: <linear / github>
+id: <Linear ID or Issue 番号>
 title: <Issue タイトル>
 
 ### Notes
@@ -33,28 +33,24 @@ title: <Issue タイトル>
 
 ## Issue コンテキスト
 
-### GitHub Issues
+### Linear Issues（デフォルト）
 
-ユーザーが Issue 番号を指定した場合（例: `#239 をやって`）、パイプライン全体で Issue コンテキストを引き回す:
+ユーザーが Linear Issue ID を指定した場合（例: `VP-9 をやって`）:
 
-```bash
-gh issue view <N> --json title,body,labels,state
-```
-
-Issue コンテキストがある場合:
-- **ブランチ名**: Issue 番号 + タイトルから自動生成（例: `feat/239-local-dev-setup`）
-- **PR リンク**: `Closes #239` を PR body に自動挿入
-- **完了時**: パイプラインの最終ステップで `gh issue close` を実行
+- **Issue 取得**: `get_issue(id: "VP-9")` で内容を把握
+- **ブランチ命名**: `gitBranchName` を使用（`mako/{team-key}-XX-...` 形式）
+- **ステータス更新**: 実装開始時に `save_issue(state: "In Progress")`
+- **完了時**: `save_issue(state: "Done")`
+- **Release リンク**: リリース後に `save_issue(links: [{url: "リリースURL", title: "Release vX.Y.Z"}])`
+- **PR リンク**: PR body に `Closes VP-9` を含める（Linear の GitHub 連携で自動クローズ）
+- Linear MCP が使えない場合はスキップ（パイプラインは止めない）
 
 Issue コンテキストは StandContext に含めて各スタンドに引き継ぐ。
 
-### Linear Issues（オプショナル）
+### GitHub Issues（レガシー）
 
-ユーザーが Linear Issue ID を指定した場合（例: `VP-9 をやって`）、Linear MCP が利用可能であれば連携する。
-Linear がなくてもパイプラインは動作する（Linear 連携は全てベストエフォート）。
+GitHub Issues が有効なリポジトリでのみ使用:
 
-- **Issue 取得**: `get_issue(id: "VP-9")` で内容を把握
-- **ステータス更新**: 実装開始時に `save_issue(id: "VP-9", state: "In Progress")`
-- **完了時**: `save_issue(id: "VP-9", state: "Done")`
-- **Release リンク**: リリース後に `save_issue(id: "VP-9", links: [{url: "リリースURL", title: "Release vX.Y.Z"}])`
-- **PR リンク**: PR 作成後に `Closes VP-9` を PR body に含める（Linear の GitHub 連携で自動クローズ）
+- **ブランチ名**: `feat/<Issue番号>-<slug>`
+- **PR リンク**: `Closes #N` を PR body に自動挿入
+- **完了時**: マージ時の `Closes #N` で自動クローズ

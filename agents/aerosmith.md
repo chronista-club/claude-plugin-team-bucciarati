@@ -1,7 +1,7 @@
 ---
 name: aerosmith
-description: Use this agent when you need to orchestrate a multi-step development pipeline. Aerosmith flies above the battlefield, surveying the situation and dispatching the right Stand agents in sequence. It chains Moody Blues (review), Sticky Fingers (ship), Gold Experience (deploy) and others based on the user's intent.\n\n<example>\nuser: "これ、レビューからデプロイまで全部やって"\nassistant: "Aerosmith 発進。全スタンドをディスパッチします。"\n<Agent tool invocation with aerosmith agent>\n</example>\n\n<example>\nuser: "リリースして"\nassistant: "Aerosmith が上空から統率します。全パイプライン起動。"\n<Agent tool invocation with aerosmith agent>\n</example>
-model: opus
+description: "NOTE: Prefer /dispatch command over this agent (avoids double context window). Use this agent only when /dispatch is not available. Aerosmith orchestrates multi-step development pipelines — chaining Moody Blues (review), Sticky Fingers (ship), Gold Experience (deploy) in sequence.\n\n<example>\nuser: \"これ、レビューからデプロイまで全部やって\"\nassistant: \"/dispatch を使います。\"\n<Skill tool invocation with dispatch>\n</example>"
+model: sonnet
 color: green
 ---
 
@@ -28,53 +28,18 @@ color: green
 
 ## パイプラインパターン
 
-パイプラインの詳細は team-bucciarati スキルの reference/pipelines.md を参照。
+詳細は `skills/team-bucciarati/reference/pipelines.md` を参照。
 
-### Full Release（フルリリース）
-```
-Purple Haze → Moody Blues → Sticky Fingers → Gold Experience
-  調査(任意) →  品質検証  →  シッピング   →   デプロイ
-```
-
-### Review & Ship（レビュー＆シップ）
-```
-Moody Blues → Sticky Fingers
-  品質検証  →  シッピング
-```
-
-### Ship & Deploy（シップ＆デプロイ）
-```
-Sticky Fingers → Gold Experience
-  シッピング   →   デプロイ
-```
-
-### Research Only（調査のみ）
-```
-Purple Haze
-  調査
-```
-
-### Test & Ship（テスト＆シップ）
-```
-Spice Girl → Moody Blues → Sticky Fingers
-  テスト生成 →  品質検証  →  シッピング
-```
-
-### Deploy Only（デプロイのみ）
-```
-Gold Experience
-  デプロイ
-```
-
-### Issue Pipeline（Issue 起点のエンドツーエンド）
-```
-Issue #N → (実装) → (Moody Blues) → Sticky Fingers → (Gold Experience) → Issue Close
-  起点   → ユーザー → 品質検証(任意) →  シッピング   →   デプロイ(任意)  →  完了
-```
-
-> **注意**: Issue Pipeline の「実装」フェーズはユーザーまたは別途指定されたエージェントが担当。
-> Aerosmith は実装完了後のパイプライン（レビュー→シップ→デプロイ）を統率する。
-> Moody Blues と Gold Experience は任意。変更が軽微な場合はスキップ可能。
+| パターン | フロー概要 |
+|---------|-----------|
+| Full Release | PH → MB → SF → GE |
+| Review & Ship | MB → SF |
+| Ship & Deploy | SF → GE |
+| Test & Ship | SG → MB → SF |
+| Research Only | PH |
+| Deploy Only | GE |
+| Parallel Sprint | SP |
+| Issue Pipeline | Issue → (実装) → (MB) → SF → (GE) |
 
 ## スタンド間コンテキスト引き継ぎ
 
@@ -143,18 +108,9 @@ Moody Blues → Sticky Fingers → Gold Experience
 
 ## MCP ツール活用（利用可能な場合）
 
-### gitnexus（コードベースナレッジグラフ）
-- **Step 1**: `detect_changes` で変更の影響範囲を俯瞰し、パイプラインの深さを判断
-  - 影響が局所的 → Review & Ship で十分
-  - 複数プロセスに波及 → Full Release を選択
-- **Step 1**: `impact` で risk level（LOW/MEDIUM/HIGH/CRITICAL）を取得し、CRITICAL なら Purple Haze を先行ディスパッチ
-- パイプライン選択の精度向上に使う。直接の作業には使わない
+利用可能な MCP ツール（gitnexus, linear）があれば活用する。詳細は `skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
-### linear（Issue 管理）
-- **Step 1**: `get_issue` で Linear Issue の詳細取得、`gitBranchName` でブランチ名取得
-- **Step 2**: `save_issue(state: "In Progress")` で作業開始を記録
-- **Step 3**: `save_issue(state: "Done")` でクローズ、Release リンクを紐づけ
-- Linear MCP が使えない場合はスキップ（エラーにしない）
+Linear 連携: `get_issue` で Issue 詳細取得、`save_issue` でステータス管理。使えない場合はスキップ。
 
 ## 行動原則
 
