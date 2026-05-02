@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "teamb-metrics": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/mcp-server/bin/teamb-metrics-darwin-arm64",
+      "env": {
+        "CLAUDE_PLUGIN_DATA": "${CLAUDE_PLUGIN_DATA}"
+      }
+    }
+  }
+}
