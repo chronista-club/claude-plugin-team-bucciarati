@@ -1,6 +1,6 @@
 {
   "name": "team-bucciarati",
-  "version": "1.7.0",
+  "version": "0.17.0",
   "description": "JoJo Part 5 Stand-themed agent team for software development pipelines",
   "author": {
     "name": "Mako",
@@ -8,7 +8,13 @@
   },
   "repository": "https://github.com/chronista-club/claude-plugin-team-bucciarati",
   "license": "MIT",
-  "keywords": ["agents", "pipeline", "jojo", "team", "orchestration"],
+  "keywords": [
+    "agents",
+    "pipeline",
+    "jojo",
+    "team",
+    "orchestration"
+  ],
   "mcpServers": {
     "teamb-metrics": {
       "command": "${CLAUDE_PLUGIN_ROOT}/mcp-server/bin/teamb-metrics-darwin-arm64",
