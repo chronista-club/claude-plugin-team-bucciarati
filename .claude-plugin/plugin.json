@@ -1,6 +1,6 @@
 {
   "name": "team-bucciarati",
-  "version": "0.17.0",
+  "version": "0.17.2",
   "description": "JoJo Part 5 Stand-themed agent team for software development pipelines",
   "author": {
     "name": "Mako",
@@ -15,6 +15,5 @@
     "team",
     "orchestration"
   ],
-  "mcpServers": "${CLAUDE_PLUGIN_ROOT}/.mcp.json",
   "homepage": "https://github.com/chronista-club/claude-plugin-team-bucciarati"
 }
