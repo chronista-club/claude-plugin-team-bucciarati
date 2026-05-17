@@ -31,13 +31,13 @@ color: orange
 - 依存関係のインストール
 - 共有設定の確認（`.env`, `.mcp.json` のシンボリンク）
 
-**ccws（Claude Workers CLI）が利用可能な場合:**
+**vp lane（VP の worker Lane 管理）が利用可能な場合:**
 ```bash
-ccws new <name> <branch>
+vp lane new <name> <branch>
 ```
 worker-files.kdl に基づくファイル共有が自動的に行われる。
 
-**ccws が利用不可の場合:**
+**vp lane が利用不可の場合:**
 ```bash
 git worktree add ../worker-<name> -b <branch>
 ```
@@ -45,7 +45,7 @@ git worktree add ../worker-<name> -b <branch>
 **VP TUI が起動中の場合:**
 ```bash
 # Worker 環境で SP デーモンを起動
-vp process start --dir ~/.local/share/ccws/<name>
+vp process start --dir ~/Library/Application\ Support/vp/lanes/<name>
 ```
 → TUI で `Ctrl+Shift+T` して Worker タブを追加。Lead はタブ切替（`Ctrl+1-9`）で Worker の PP を確認できる。
 
@@ -90,7 +90,7 @@ Agent ツールで直接ワーカーを起動。
 
 - 各ワーカーの成果物（PR）を一覧化
 - 競合がないか確認
-- クリーンアップ（`ccws cleanup` / worktree 削除 / TUI タブ閉じる）
+- クリーンアップ（`vp lane cleanup` / worktree 削除 / TUI タブ閉じる）
 
 ## Gotchas
 
