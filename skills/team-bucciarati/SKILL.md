@@ -41,6 +41,7 @@ JoJo Part 5「チーム・ブチャラティ」をモチーフにした7体の�
 スタンド間のコンテキスト引き継ぎと Issue コンテキストの仕様は [reference/stand-context.md](reference/stand-context.md) を参照。
 
 - 副作用ガード（コミットライン・破壊コマンド）のフック定義: [reference/hooks.md](reference/hooks.md)
+- VP Canvas 連携（Aerosmith Radar）: [reference/vp-canvas.md](reference/vp-canvas.md)
 - Sex Pistols の並列タスク指示規約: [reference/worker-conventions.md](reference/worker-conventions.md)
 - スタンドパラメータ（JoJo フレーバー）: [reference/stand-params.md](reference/stand-params.md)
 
@@ -50,6 +51,7 @@ JoJo Part 5「チーム・ブチャラティ」をモチーフにした7体の�
 | **serena** | シンボリックコード解析 | Purple Haze, Gold Experience, Moody Blues, Sticky Fingers, Spice Girl |
 | **context7** | ライブラリドキュメント | Purple Haze, Gold Experience, Spice Girl |
 | **linear** | Issue 参照（読み取りのみ） | Aerosmith, Gold Experience |
+| **vantage-point** | Canvas 可視化 — Aerosmith Radar（作戦盤） | Aerosmith のみ |
 
 > 全て**オプショナル** — MCP が利用不可でも各スタンドは動作する。
 
