@@ -7,13 +7,14 @@ JoJo Part 5 スタンドをモチーフにした Claude Code エージェント�
 ## 構成
 
 ```
+team.kdl            # ★ SSOT — ロスター/モデル配分/パイプライン/境界の構造化ファクト
 .claude-plugin/     # プラグインメタデータ (plugin.json)
 .mcp.json           # MCP サーバー定義 (teamb-metrics, auto-discovery)
-agents/             # スタンドエージェント定義 (7体)
+agents/             # スタンドエージェント定義 (7体) — 散文の正はこちら
 commands/           # スラッシュコマンド (/dispatch)
 skills/             # スキル定義 (team-bucciarati, improve)
-mcp-server/         # teamb-metrics MCP サーバー (Rust)
-scripts/            # 共有スクリプト (detect-ci.sh)
+mcp-server/         # teamb-metrics MCP サーバー + teamb-check (Rust)
+scripts/            # 共有スクリプト (detect-ci.sh, check-teamdef.sh)
 ```
 
 ## エージェント一覧
@@ -30,6 +31,8 @@ scripts/            # 共有スクリプト (detect-ci.sh)
 
 ## 開発ルール
 
+- **SSOT は `team.kdl`** — ロスター（モデル・カラー）・パイプライン・コミットライン境界を変更する時は必ず team.kdl から更新し、`scripts/check-teamdef.sh` でドキュメント群との整合を検証すること（コミット前必須）
+- エージェント定義の散文は `agents/*.md` が正（team.kdl は構造化ファクトのみ持つ）
 - エージェント定義は `agents/*.md` に配置
 - スキルは `skills/<name>/SKILL.md` に配置
 - コマンドは `commands/*.md` に配置
