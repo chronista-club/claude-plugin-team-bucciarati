@@ -33,14 +33,21 @@ argument-hint: "[finish|forge|polish|barrage|resume|issue-id]"
 5. **Research** — Purple Haze — 調査のみ（副作用なし）
 6. **Custom** — ユーザー指示に応じてスタンドを自由に組む
 
-## Step 3: ディスパッチ
+## Step 3: Radar 展開（VP Canvas、利用可能な場合）
+
+vantage-point MCP が使えるなら、作戦盤を Canvas に描いてから進む。
+テンプレート・更新タイミングは `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/vp-canvas.md` を参照。
+VP がなければ黙ってスキップ。
+
+## Step 4: ディスパッチ
 
 決定したパイプラインに沿って、各スタンドを **Agent ツール** で順次呼び出す。
 
 **ルール:**
 - 各スタンドの結果を確認してから次に進む
 - 前スタンドの結果（diff サマリ、テスト状態、設計判断等）を次のスタンドのプロンプトに含める
-- Moody Blues が BLOCKED → パイプライン停止、ユーザーに報告
+- 各スタンド完了ごとに Radar を更新（VP 利用時）
+- Moody Blues が BLOCKED → パイプライン停止、Radar に停止理由を明示、ユーザーに報告
 - 任意のスタンドがエラー → パイプライン停止、ユーザーに報告
 
 ### Issue コンテキスト（Linear）
@@ -50,7 +57,7 @@ Issue ID がある場合、**要件ソースとして**パイプライン全体�
 - ステータス更新・クローズは行わない（コミット以降と同様、team-b の領分外）
 - Linear MCP が使えない場合はスキップ（ブロックしない）
 
-## Step 4: 完了報告
+## Step 5: 完了報告
 
 ```
 ## Mission Report

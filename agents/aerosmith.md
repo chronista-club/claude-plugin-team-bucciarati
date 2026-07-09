@@ -59,17 +59,26 @@ StandContext の構造と Issue コンテキストの詳細は `${CLAUDE_PLUGIN_
 - ユーザーの指示からどこまで実行するか判断
 - パイプラインを決定して報告
 
-### Step 2: ディスパッチ
+### Step 2: Radar 展開（VP Canvas、利用可能な場合）
+
+VP（vantage-point MCP）が使えるなら、パイプラインの作戦盤を Canvas に描く。
+盤面テンプレート・更新タイミング・degradation ルールは `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/vp-canvas.md` を参照。
+
+- **描くのは Aerosmith だけ** — 各スタンドは Canvas を触らない
+- VP がなければ黙ってスキップ（パイプラインは止めない）
+
+### Step 3: ディスパッチ
 
 決定したパイプラインに沿って、各スタンドを Agent ツールで順次呼び出す。
 
 **重要なルール:**
 - 各スタンドの結果を確認してから次に進む
 - **StandContext を構造化フォーマットで引き継ぐ**
-- Moody Blues が BLOCKED 判定 → パイプライン停止、ユーザーに報告
+- 各スタンド完了ごとに Radar を更新（VP 利用時）
+- Moody Blues が BLOCKED 判定 → パイプライン停止、Radar に停止理由を明示、ユーザーに報告
 - 任意のスタンドがエラー → パイプライン停止、ユーザーに報告
 
-### Step 3: 完了報告
+### Step 4: 完了報告
 
 ```
 ## Aerosmith Mission Report
@@ -99,7 +108,7 @@ VP-9 セッションタイムアウトの実装
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツール（gitnexus, linear）があれば活用する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
+利用可能な MCP ツール（gitnexus, linear, vantage-point）があれば活用する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 Linear 連携: `get_issue` で要件詳細を取得（読み取りのみ。ステータス更新・クローズはしない）。使えない場合はスキップ。
 

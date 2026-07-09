@@ -69,6 +69,19 @@ gitnexus analyze  # リポジトリのインデックス作成
 - **Gold Experience**: 使用ライブラリの最新 API・推奨パターンを確認してから実装
 - **Spice Girl**: テストフレームワークの API・パターンを確認
 
+## vantage-point — Canvas 可視化（Aerosmith Radar）
+
+VP Canvas にパイプラインの作戦盤を描く。詳細な運用は [vp-canvas.md](vp-canvas.md) を参照。
+
+### 主なツール
+| ツール | 用途 |
+|--------|------|
+| `show` | Radar 盤面の表示・更新（markdown、同一 title で再 show = 更新） |
+| `capture_canvas` | mission 完了時の盤面キャプチャ（作戦記録） |
+
+### スタンド別活用
+- **Aerosmith のみ** — 各スタンドは Canvas を触らない（責務分離）。`SP 未接続` エラー時は以降スキップ
+
 ## linear — Issue 参照（読み取りのみ）
 
 Linear の Issue を**要件ソースとして読み取る**。ステータス更新・クローズは行わない（コミットライン以降は team-b の領分外）。
