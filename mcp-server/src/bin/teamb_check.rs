@@ -161,7 +161,9 @@ fn main() -> Result<()> {
         for (key, expected) in [("name", &s.name), ("model", &s.model), ("color", &s.color)] {
             match frontmatter_value(&md, key) {
                 Some(v) if v == *expected => {}
-                got => err(format!("{rel}: frontmatter {key} = {got:?}、期待 {expected:?}")),
+                got => err(format!(
+                    "{rel}: frontmatter {key} = {got:?}、期待 {expected:?}"
+                )),
             }
         }
     }
@@ -200,7 +202,10 @@ fn main() -> Result<()> {
                     ));
                 }
             }
-            None => err(format!("SKILL.md: ロスター表に {} の行がありません", s.display)),
+            None => err(format!(
+                "SKILL.md: ロスター表に {} の行がありません",
+                s.display
+            )),
         }
         let readme_row = readme
             .lines()
@@ -219,27 +224,41 @@ fn main() -> Result<()> {
                     }
                 }
             }
-            None => err(format!("README.md: ロスター表に {} の行がありません", s.display)),
+            None => err(format!(
+                "README.md: ロスター表に {} の行がありません",
+                s.display
+            )),
         }
         if !claude_md.contains(&format!("| {} |", s.display)) {
-            err(format!("CLAUDE.md: エージェント一覧に {} がありません", s.display));
+            err(format!(
+                "CLAUDE.md: エージェント一覧に {} がありません",
+                s.display
+            ));
         }
     }
 
     // --- 3. パイプライン ---
     let default_count = pipelines.iter().filter(|p| p.default).count();
     if default_count != 1 {
-        err(format!("default パイプラインは1つであるべき（現在 {default_count}）"));
+        err(format!(
+            "default パイプラインは1つであるべき（現在 {default_count}）"
+        ));
     }
     let pipelines_md = read(&root, "skills/team-bucciarati/reference/pipelines.md")?;
     let dispatch_md = read(&root, "commands/dispatch.md")?;
     let stand_names: Vec<&str> = stands.iter().map(|s| s.name.as_str()).collect();
     for p in pipelines {
         if !pipelines_md.contains(&format!("## {}", p.name)) {
-            err(format!("pipelines.md: `## {}` セクションがありません", p.name));
+            err(format!(
+                "pipelines.md: `## {}` セクションがありません",
+                p.name
+            ));
         }
         if !dispatch_md.contains(&format!("**{}**", p.name)) {
-            err(format!("dispatch.md: パイプライン {} への言及がありません", p.name));
+            err(format!(
+                "dispatch.md: パイプライン {} への言及がありません",
+                p.name
+            ));
         }
         match skill
             .lines()
@@ -250,7 +269,10 @@ fn main() -> Result<()> {
                 "SKILL.md: パイプライン {} の use-case が team.kdl と不一致（期待: {}）",
                 p.name, p.use_case
             )),
-            None => err(format!("SKILL.md: パイプライン {} の行がありません", p.name)),
+            None => err(format!(
+                "SKILL.md: パイプライン {} の行がありません",
+                p.name
+            )),
         }
         for step in &p.steps {
             if !stand_names.contains(&step.stand.as_str()) {
