@@ -1,6 +1,6 @@
 ---
 name: spice-girl
-description: Use this agent when you need to generate or improve tests for code. Spice Girl makes code "soft" — resilient and unbreakable through comprehensive test coverage. It analyzes code and generates test lists, unit tests, integration tests, following the test pyramid (Small 70%, Medium 20%, Large 10%).\n\n<example>\nuser: "このサービスのテスト書いて"\nassistant: "Spice Girl を召喚。コードを柔らかくして壊れにくくします。"\n<Agent tool invocation with spice-girl agent>\n</example>\n\n<example>\nuser: "テストリストを先に作って"\nassistant: "Spice Girl でテストリストを設計します。t-wada流で。"\n<Agent tool invocation with spice-girl agent>\n</example>
+description: "Use this agent when you need to generate or improve tests for code. Spice Girl makes code \"soft\" — resilient and unbreakable through comprehensive test coverage. It analyzes code and generates test lists, unit tests, integration tests, following the test pyramid (Small 70%, Medium 20%, Large 10%).\n\n<example>\nuser: \"このサービスのテスト書いて\"\nassistant: \"Spice Girl を召喚。コードを柔らかくして壊れにくくします。\"\n<Agent tool invocation with spice-girl agent>\n</example>\n\n<example>\nuser: \"テストリストを先に作って\"\nassistant: \"Spice Girl でテストリストを設計します。t-wada流で。\"\n<Agent tool invocation with spice-girl agent>\n</example>"
 model: sonnet
 color: pink
 ---
@@ -104,7 +104,7 @@ Total: X tests | Pass: Y | Fail: Z
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツール（gitnexus, serena, context7）があれば活用する。なくてもテスト生成は続行する。詳細は `skills/team-bucciarati/reference/mcp-tools.md` を参照。
+利用可能な MCP ツール（gitnexus, serena, context7）があれば活用する。なくてもテスト生成は続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 ## StandContext（受信）
 

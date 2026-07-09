@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.18.0] - 2026-07-09
+
+### Changed
+- **スコープ再定義**: team-b を「強く美しいコードに貢献するレイヤーまで」に限定。チームの終点は「コミット可能な working tree」— commit / push / PR / merge / deploy はどのスタンドも行わない（コミットライン厳守）
+- **Sticky Fingers**: Shipping (commit → PR → merge) → **Refactoring** に転身。ジッパー = 分解・移動・再結合。挙動を変えずに構造を美しくする（安全網確認 → 一手ずつ → 再結合検証）
+- **Gold Experience**: Deploy (build → migrate → deploy → health check) → **Implementation** に転身。仕様・Issue という無機物に生命を吹き込み、コードベースの流儀に沿った生きたコードを実装する（全 green までローカル検証）
+- **Sex Pistols**: 並列ワーカー管理（vp lane / ccwire / TUI 等のセッションインフラ）→ **並列コード作業**に再スコープ。Agent ツールの並列サブエージェントで一斉 codemod・独立リファクタを実行し、統合検証で締める
+- **Moody Blues**: ローカル品質ゲートに純化。PR コメント投稿を廃止（レポートはユーザーへの報告のみ）、Verdict を SHIP IT → COMMIT READY に変更
+- **Aerosmith / /dispatch**: パイプラインを再定義 — Finish（デフォルト・仕上げ）/ Forge（実装一式）/ Polish(構造改善) / Barrage（並列一斉）/ Research。Issue は要件ソースとして読み取りのみ（ステータス更新・クローズ廃止）
+- **StandContext**: artifacts を diff_summary / tests_status / checks_status に変更（pr_number / deploy_url / ci_status を削除）
+- **hooks**: スタンド別ガード → 全スタンド共通の「コミットライン・ガード」（git commit/push/merge, gh pr をブロック）+ 破壊コマンド・ガードに再編
+- **CLAUDE.md**: 構成図の stale 記述を修正（marketplace.json / skills.txt への言及を削除、mcp-server / scripts を追記）
+- **モデル配分**: Gold Experience（実装）と Sticky Fingers（リファクタ）を sonnet → opus に格上げ。思考の深さが質を決める仕事 = opus、規律が質を決める頻出の仕事 = sonnet の方針。さらに深い思考が必要な場面は呼び出し時に fable を指定
+
 ## [0.17.2] - 2026-05-02
 
 ### Fixed

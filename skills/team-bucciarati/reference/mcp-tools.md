@@ -29,7 +29,10 @@ gitnexus analyze  # リポジトリのインデックス作成
 
 ### スタンド別活用
 - **Purple Haze**: `query` で全体像把握 → `context` でシンボル深堀り → `impact` で影響範囲特定
+- **Gold Experience**: `query` / `context` で実装地点の周辺構造・既存パターンを把握
 - **Moody Blues**: `detect_changes` で diff の影響フロー検出 → `impact` で変更シンボルの blast radius 確認
+- **Sticky Fingers**: `rename` で安全なリネーム、`impact` で分解前の blast radius 確認
+- **Sex Pistols**: `impact` で依存関係を分析し、安全な並列分割境界を見つける
 - **Spice Girl**: `context` でテスト対象の依存関係把握 → `query` でテスト対象の実行フロー理解
 
 ## serena — シンボリックコード解析
@@ -46,7 +49,9 @@ gitnexus analyze  # リポジトリのインデックス作成
 
 ### スタンド別活用
 - **Purple Haze**: シンボルの依存関係を辿って設計意図を理解
+- **Gold Experience**: 実装地点のシンボル構造を正確に把握して精密に追記
 - **Moody Blues**: 変更シンボルの参照元を確認、リグレッションリスク評価
+- **Sticky Fingers**: `find_referencing_symbols` で参照元を洗い出し、`replace_symbol_body` でシンボル単位の精密な組み替え
 - **Spice Girl**: テスト対象の公開 API とメソッドシグネチャを正確に把握
 
 ## context7 — ライブラリドキュメント
@@ -61,35 +66,19 @@ gitnexus analyze  # リポジトリのインデックス作成
 
 ### スタンド別活用
 - **Purple Haze**: 技術調査でライブラリの API 仕様・ベストプラクティスを確認
+- **Gold Experience**: 使用ライブラリの最新 API・推奨パターンを確認してから実装
 - **Spice Girl**: テストフレームワークの API・パターンを確認
 
-## linear — Issue 管理
+## linear — Issue 参照（読み取りのみ）
 
-Linear の Issue・プロジェクト・サイクルを操作。
+Linear の Issue を**要件ソースとして読み取る**。ステータス更新・クローズは行わない（コミットライン以降は team-b の領分外）。
 
 ### 主なツール
 | ツール | 用途 |
 |--------|------|
-| `get_issue` | Issue の詳細取得 |
-| `save_issue` | Issue の作成・更新 |
+| `get_issue` | Issue の詳細取得（要件・受け入れ条件の把握） |
 | `list_issues` | Issue 一覧 |
-| `get_issue_status` | ステータス確認 |
 
 ### スタンド別活用
-- **Aerosmith**: Issue Pipeline で Issue コンテキストの取得・ステータス管理
-- **Sticky Fingers**: PR 作成時にステータスを "In Progress" に、マージ後に "Done" に
-
-## Vantage Point CLI（VP TUI 連携時）
-
-VP TUI が起動中の場合、Sex Pistols が Worker 管理に使用する。
-
-### 主なコマンド
-| コマンド | 用途 |
-|---------|------|
-| `vp process start --dir <path>` | 指定ディレクトリで SP デーモンを起動。TUI にタブとして追加可能に |
-| `vp pane show --content <text>` | PP ペインにコンテンツを表示（markdown/html/log/url） |
-| `vp pane clear` | PP ペインをクリア |
-| `vp pane show --target <name>` | 特定プロジェクト（Worker）の PP に表示 |
-
-### スタンド別活用
-- **Sex Pistols**: Worker 環境で `vp process start` → TUI タブ追加。Worker が `vp pane show` で進捗表示
+- **Aerosmith**: パイプライン開始時に Issue コンテキストを取得し、StandContext で引き回す
+- **Gold Experience**: 実装対象の要件・受け入れ条件を Issue から読み取る
