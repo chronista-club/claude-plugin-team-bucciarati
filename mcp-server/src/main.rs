@@ -80,6 +80,36 @@ struct DeltaInfo {
     percent_change: f64,
 }
 
+/// Percent change from `before` to `after`.
+///
+/// Falls back to ±100.0 when `before` is effectively zero but a change
+/// occurred (an undefined ratio), and 0.0 when both values are effectively
+/// equal. Not rounded — callers round for presentation.
+fn percent_change(before: f64, after: f64) -> f64 {
+    let delta = after - before;
+    if before.abs() > f64::EPSILON {
+        (delta / before) * 100.0
+    } else if delta.abs() > f64::EPSILON {
+        if delta > 0.0 { 100.0 } else { -100.0 }
+    } else {
+        0.0
+    }
+}
+
+impl DeltaInfo {
+    /// Build a delta entry for a single metric, computing the delta and the
+    /// percent change (rounded to two decimals for presentation).
+    fn new(before: f64, after: f64) -> Self {
+        let raw_percent = percent_change(before, after);
+        Self {
+            before,
+            after,
+            delta: after - before,
+            percent_change: (raw_percent * 100.0).round() / 100.0,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, JsonSchema)]
 struct LogParams {
     /// Iteration number in the improvement loop
@@ -108,10 +138,7 @@ impl TeambMetrics {
         description = "Execute a shell command and extract numeric metrics from its output using regex patterns. Each pattern should contain one capture group that matches a number."
     )]
     async fn measure(&self, Parameters(params): Parameters<MeasureParams>) -> String {
-        match self.do_measure(params).await {
-            Ok(json) => json,
-            Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
-        }
+        into_response(self.do_measure(params).await)
     }
 
     #[tool(
@@ -119,10 +146,7 @@ impl TeambMetrics {
         description = "Compare before/after metrics and suggest whether to keep or revert the change. Returns deltas with percentage changes and a suggestion (improved/regressed/unchanged). The final decision is always made by the calling agent, not this tool."
     )]
     async fn decide(&self, Parameters(params): Parameters<DecideParams>) -> String {
-        match self.do_decide(params) {
-            Ok(json) => json,
-            Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
-        }
+        into_response(self.do_decide(params))
     }
 
     #[tool(
@@ -130,10 +154,19 @@ impl TeambMetrics {
         description = "Append a log entry to the improvement loop TSV log file. Records iteration number, action taken, metrics snapshot, and verdict. The log is stored in the plugin's persistent data directory."
     )]
     async fn log(&self, Parameters(params): Parameters<LogParams>) -> String {
-        match self.do_log(params).await {
-            Ok(json) => json,
-            Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
-        }
+        into_response(self.do_log(params).await)
+    }
+}
+
+/// Convert a business-logic result into a tool response string.
+///
+/// On success the pre-serialized JSON payload is returned as-is; on failure the
+/// error is wrapped in a uniform `{"error": "..."}` JSON object. Centralizes the
+/// error-handling boilerplate shared by every `#[tool]` wrapper.
+fn into_response(result: anyhow::Result<String>) -> String {
+    match result {
+        Ok(json) => json,
+        Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
     }
 }
 
@@ -186,30 +219,17 @@ impl TeambMetrics {
         for key in all_keys {
             let before = params.before.get(key).copied().unwrap_or(0.0);
             let after = params.after.get(key).copied().unwrap_or(0.0);
-            let delta = after - before;
-            let percent_change = if before.abs() > f64::EPSILON {
-                (delta / before) * 100.0
-            } else if delta.abs() > f64::EPSILON {
-                if delta > 0.0 { 100.0 } else { -100.0 }
-            } else {
-                0.0
-            };
 
-            if percent_change > params.threshold {
+            // Classify on the unrounded percent change so threshold comparisons
+            // are unaffected by presentation rounding.
+            let change = percent_change(before, after);
+            if change > params.threshold {
                 improved_count += 1;
-            } else if percent_change < -params.threshold {
+            } else if change < -params.threshold {
                 regressed_count += 1;
             }
 
-            deltas.insert(
-                key.clone(),
-                DeltaInfo {
-                    before,
-                    after,
-                    delta,
-                    percent_change: (percent_change * 100.0).round() / 100.0,
-                },
-            );
+            deltas.insert(key.clone(), DeltaInfo::new(before, after));
         }
 
         let suggestion = if regressed_count > 0 {
