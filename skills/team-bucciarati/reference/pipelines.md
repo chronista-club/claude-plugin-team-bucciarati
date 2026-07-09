@@ -1,6 +1,6 @@
 # Pipeline Patterns
 
-Team Bucciarati のパイプラインパターン。シンプルに4+1構成。
+Team Bucciarati のパイプラインパターン。シンプルに5+1構成。
 
 **全パイプラインの終点は「コミット可能な working tree」。** コミット・PR・デプロイは含めない。
 
@@ -83,6 +83,24 @@ Sex Pistols → Moody Blues
 ### トリガー例
 - 「この API 移行、全ファイル一斉にやって」
 - `/dispatch barrage`
+
+## Research
+
+調査のみ。実装もレビューも不要で、知りたいだけの時。
+
+```
+Purple Haze
+  深掘り調査
+```
+
+### フロー
+
+1. **Purple Haze**: コードベース・外部リソースへの浸透調査 → 構造化レポート（副作用なし）
+
+### トリガー例
+- 「このエラーの原因を突き止めて」
+- 「この設計の背景を調べて」
+- `/dispatch research`
 
 ## Custom
 

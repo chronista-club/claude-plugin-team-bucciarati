@@ -63,6 +63,7 @@ JoJo Part 5「チーム・ブチャラティ」をモチーフにした7体の�
 | **Forge** | (Purple Haze) → Gold Experience → Spice Girl → Moody Blues | 要件から実装一式 |
 | **Polish** | Sticky Fingers → Moody Blues | 挙動を変えずに構造改善 |
 | **Barrage** | Sex Pistols → Moody Blues | 独立作業の並列一斉実行 |
+| **Research** | Purple Haze | 調査のみ（副作用なし） |
 | **Custom** | 自由に組み合わせ | 調査→テスト、実装のみ等 |
 
 > 1スタンドで完結する場合は直接呼び出し（パイプライン不要）。詳細は [reference/pipelines.md](reference/pipelines.md)

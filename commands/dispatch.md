@@ -30,7 +30,8 @@ argument-hint: "[finish|forge|polish|barrage|resume|issue-id]"
 2. **Forge** — (Purple Haze) → Gold Experience → Spice Girl → Moody Blues — 要件から実装一式
 3. **Polish** — Sticky Fingers → Moody Blues — 挙動を変えずに構造を美しく
 4. **Barrage** — Sex Pistols → Moody Blues — 独立作業の並列一斉実行
-5. **Custom** — ユーザー指示に応じてスタンドを自由に組む
+5. **Research** — Purple Haze — 調査のみ（副作用なし）
+6. **Custom** — ユーザー指示に応じてスタンドを自由に組む
 
 ## Step 3: ディスパッチ
 
