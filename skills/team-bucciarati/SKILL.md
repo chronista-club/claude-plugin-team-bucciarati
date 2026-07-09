@@ -1,6 +1,6 @@
 ---
 name: team-bucciarati
-description: "JoJo Part 5 Stand-themed agent team for software development pipelines. Use this skill when asked about team composition, pipeline patterns, or dispatching agents."
+description: "JoJo Part 5 Stand-themed agent team for strong, beautiful code. Use this skill when asked about team composition, pipeline patterns, or dispatching agents."
 triggers:
   - "チーム"
   - "パイプライン"
@@ -16,19 +16,23 @@ triggers:
 
 JoJo Part 5「チーム・ブチャラティ」をモチーフにした7体のスタンド・エージェントチーム。
 
-各スタンドは開発パイプラインの特定フェーズを担当し、Aerosmith がオーケストレーターとして統率する。
+各スタンドは**コードを強く美しくする**フェーズを担当し、Aerosmith がオーケストレーターとして統率する。
+
+**チームの終点は「コミット可能な working tree」。** コミット・PR・マージ・デプロイはユーザーとメインセッションの領分（team-b はコミットラインを越えない）。
 
 ## チームロスター
 
 | Stand | User | Role | Model | 能力 |
 |-------|------|------|-------|------|
-| **Aerosmith** | Narancia | Orchestrator | sonnet | パイプライン全体を俯瞰・制御 |
+| **Aerosmith** | Narancia | Orchestrator | sonnet | コード品質パイプラインを俯瞰・制御 |
 | **Purple Haze** | Fugo | Research | opus | 深掘り調査、副作用なし |
-| **Moody Blues** | Abbacchio | Quality Gate | sonnet | CI + 多角的コードレビュー |
-| **Sticky Fingers** | Bucciarati | Shipping | sonnet | commit → push → PR → merge |
-| **Gold Experience** | Giorno | Deploy | sonnet | build → migrate → deploy → health check |
-| **Sex Pistols** | Mista | Parallel Workers | sonnet | 並列ワーカー管理（4体禁止w） |
+| **Gold Experience** | Giorno | Implementation | opus | 要件に生命を吹き込む: 理解 → 実装 → ローカル検証 |
 | **Spice Girl** | Trish | Test Generation | sonnet | t-wada流テストピラミッド |
+| **Moody Blues** | Abbacchio | Quality Gate | sonnet | ローカルチェック + 多角的コードレビュー |
+| **Sticky Fingers** | Bucciarati | Refactoring | opus | 分解 → 移動 → 再結合。挙動を変えず構造を美しく |
+| **Sex Pistols** | Mista | Parallel Code Work | sonnet | 並列一斉コード作業（4体禁止w） |
+
+> **モデル配分の考え方**: 思考の深さが質を決める仕事（実装・リファクタ・調査）= opus。規律とプロセスが質を決める頻出の仕事（レビュー・テスト・統率・分配）= sonnet。さらに深い思考が必要な場面では、呼び出し時に fable へのエスカレーションを指定できる。
 
 ## MCP ツール連携
 
@@ -36,12 +40,16 @@ JoJo Part 5「チーム・ブチャラティ」をモチーフにした7体の�
 
 スタンド間のコンテキスト引き継ぎと Issue コンテキストの仕様は [reference/stand-context.md](reference/stand-context.md) を参照。
 
+- 副作用ガード（コミットライン・破壊コマンド）のフック定義: [reference/hooks.md](reference/hooks.md)
+- Sex Pistols の並列タスク指示規約: [reference/worker-conventions.md](reference/worker-conventions.md)
+- スタンドパラメータ（JoJo フレーバー）: [reference/stand-params.md](reference/stand-params.md)
+
 | MCP | 用途 | 使うスタンド |
 |-----|------|-------------|
-| **gitnexus** | コードベースナレッジグラフ | 全スタンド（`rename` 以外の6ツールを活用） |
-| **serena** | シンボリックコード解析 | Purple Haze, Moody Blues, Spice Girl |
-| **context7** | ライブラリドキュメント | Purple Haze, Spice Girl |
-| **linear** | Issue 管理 | Aerosmith, Sticky Fingers |
+| **gitnexus** | コードベースナレッジグラフ | 全スタンド |
+| **serena** | シンボリックコード解析 | Purple Haze, Gold Experience, Moody Blues, Sticky Fingers, Spice Girl |
+| **context7** | ライブラリドキュメント | Purple Haze, Gold Experience, Spice Girl |
+| **linear** | Issue 参照（読み取りのみ） | Aerosmith, Gold Experience |
 
 > 全て**オプショナル** — MCP が利用不可でも各スタンドは動作する。
 
@@ -51,10 +59,11 @@ JoJo Part 5「チーム・ブチャラティ」をモチーフにした7体の�
 
 | Pattern | Flow | Use Case |
 |---------|------|----------|
-| **Ship**（デフォルト） | Moody Blues → Sticky Fingers | レビュー → シップ（日常の 80%） |
-| **Full** | (Purple Haze) → Moody Blues → Sticky Fingers → (Gold Experience) | フルパイプライン |
-| **Deploy** | Gold Experience | デプロイのみ |
-| **Custom** | 自由に組み合わせ | テスト&シップ、並列スプリント等 |
+| **Finish**（デフォルト） | (Spice Girl) → Moody Blues | 手元の変更をコミット可能な品質に仕上げる |
+| **Forge** | (Purple Haze) → Gold Experience → Spice Girl → Moody Blues | 要件から実装一式 |
+| **Polish** | Sticky Fingers → Moody Blues | 挙動を変えずに構造改善 |
+| **Barrage** | Sex Pistols → Moody Blues | 独立作業の並列一斉実行 |
+| **Custom** | 自由に組み合わせ | 調査→テスト、実装のみ等 |
 
 > 1スタンドで完結する場合は直接呼び出し（パイプライン不要）。詳細は [reference/pipelines.md](reference/pipelines.md)
 
@@ -65,14 +74,15 @@ JoJo Part 5「チーム・ブチャラティ」をモチーフにした7体の�
 各スタンドは独立したエージェントとして直接呼び出せる:
 
 - 「Moody Blues でレビューして」→ Moody Blues エージェントが起動
-- 「Sticky Fingers でシップして」→ Sticky Fingers エージェントが起動
+- 「Sticky Fingers でリファクタして」→ Sticky Fingers エージェントが起動
+- 「Gold Experience で実装して」→ Gold Experience エージェントが起動
 
 ### パイプライン実行
 
 Aerosmith 経由でパイプラインを組む:
 
-- 「レビューからデプロイまで全部やって」→ Aerosmith が Full Release パイプラインを実行
-- 「テスト書いてからシップして」→ Aerosmith が Test & Ship パイプラインを実行
+- 「この機能、実装からレビューまでやって」→ Aerosmith が Forge パイプラインを実行
+- 「テスト書いてから仕上げて」→ Aerosmith が Finish パイプラインを実行
 
 ### /dispatch コマンド
 
@@ -83,4 +93,5 @@ Aerosmith 経由でパイプラインを組む:
 1. **責務分離** — 各スタンドは自分の責務のみ実行し、他のスタンドの領域に踏み込まない
 2. **順次実行** — パイプラインは必ず順次実行。前のスタンドの結果を確認してから次へ
 3. **停止条件** — Moody Blues が BLOCKED 判定、または任意のスタンドがエラーの場合、パイプライン停止
-4. **結果引き継ぎ** — 各スタンドの出力を次のスタンドに渡す（PR番号、デプロイURL 等）
+4. **結果引き継ぎ** — 各スタンドの出力を次のスタンドに渡す（diff サマリ、テスト状態 等）
+5. **コミットラインを越えない** — どのスタンドも commit / push / PR / deploy をしない

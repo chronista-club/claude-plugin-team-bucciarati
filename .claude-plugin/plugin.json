@@ -1,7 +1,7 @@
 {
   "name": "team-bucciarati",
-  "version": "0.17.2",
-  "description": "JoJo Part 5 Stand-themed agent team for software development pipelines",
+  "version": "0.18.0",
+  "description": "JoJo Part 5 Stand-themed agent team for strong, beautiful code — research, implement, test, review, refactor. Stops at the commit line.",
   "author": {
     "name": "Mako",
     "email": "mito@chronista.club"
@@ -10,7 +10,8 @@
   "license": "MIT",
   "keywords": [
     "agents",
-    "pipeline",
+    "code-quality",
+    "refactoring",
     "jojo",
     "team",
     "orchestration"

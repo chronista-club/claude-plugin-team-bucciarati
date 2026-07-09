@@ -10,14 +10,13 @@
 
 ### Source
 stand: <前のスタンド名>
-status: <DONE / BLOCKED / ERROR>
+status: <DONE / COMMIT READY / NEEDS WORK / BLOCKED / ERROR>
 
 ### Artifacts
-branch: <ブランチ名>
-pr_number: <PR 番号>
-pr_url: <PR URL>
-deploy_url: <デプロイ URL>
-ci_status: <PASS / FAIL>
+diff_summary: <+X -Y (N files)>
+files: <主要な変更ファイル>
+tests_status: <PASS / FAIL / NONE>
+checks_status: <PASS / FAIL>（typecheck / lint / build）
 
 ### Issue
 type: <linear / github>
@@ -25,7 +24,7 @@ id: <Linear ID or Issue 番号>
 title: <Issue タイトル>
 
 ### Notes
-<前のスタンドからの引き継ぎメモ>
+<前のスタンドからの引き継ぎメモ — 設計判断、発見したバグ、次スタンドへの依頼>
 ```
 
 **全てのフィールドはオプショナル。** 該当するものだけ埋める。
@@ -33,24 +32,20 @@ title: <Issue タイトル>
 
 ## Issue コンテキスト
 
+Issue は**要件のソースとして読み取るだけ**。ステータス更新・クローズ・PR リンクは team-b の領分外（コミットライン以降）。
+
 ### Linear Issues（デフォルト）
 
 ユーザーが Linear Issue ID を指定した場合（例: `VP-9 をやって`）:
 
-- **Issue 取得**: `get_issue(id: "VP-9")` で内容を把握
-- **ブランチ命名**: `gitBranchName` を使用（`mako/{team-key}-XX-...` 形式）
-- **ステータス更新**: 実装開始時に `save_issue(state: "In Progress")`
-- **完了時**: `save_issue(state: "Done")`
-- **Release リンク**: リリース後に `save_issue(links: [{url: "リリースURL", title: "Release vX.Y.Z"}])`
-- **PR リンク**: PR body に `Closes VP-9` を含める（Linear の GitHub 連携で自動クローズ）
+- **Issue 取得**: `get_issue(id: "VP-9")` で要件・受け入れ条件を把握
+- 取得した内容を StandContext の `Issue` セクションに含めて各スタンドに引き継ぐ
+- **書き込みはしない** — `save_issue` によるステータス変更・クローズは行わない
 - Linear MCP が使えない場合はスキップ（パイプラインは止めない）
 
-Issue コンテキストは StandContext に含めて各スタンドに引き継ぐ。
+### GitHub Issues
 
-### GitHub Issues（レガシー）
+GitHub Issues が有効なリポジトリの場合:
 
-GitHub Issues が有効なリポジトリでのみ使用:
-
-- **ブランチ名**: `feat/<Issue番号>-<slug>`
-- **PR リンク**: `Closes #N` を PR body に自動挿入
-- **完了時**: マージ時の `Closes #N` で自動クローズ
+- `gh issue view <N>` で要件を読み取る
+- クローズ・コメント投稿はしない

@@ -1,66 +1,88 @@
 # Pipeline Patterns
 
-Team Bucciarati のパイプラインパターン。シンプルに3+1構成。
+Team Bucciarati のパイプラインパターン。シンプルに4+1構成。
 
-## Ship（デフォルト）
+**全パイプラインの終点は「コミット可能な working tree」。** コミット・PR・デプロイは含めない。
 
-日常の 80% がこれ。レビューしてシップ。
+## Finish（デフォルト）
+
+日常の 80% がこれ。手元の変更をコミット可能な品質に仕上げる。
 
 ```
-Moody Blues → Sticky Fingers
-  品質検証  →  シッピング
+(Spice Girl) → Moody Blues
+  テスト補強(任意) →  品質検証
 ```
 
 ### フロー
 
-1. **Moody Blues**: CI + コードレビュー + lint/format 自動修正
+1. **Spice Girl**（任意）: 変更箇所のテストが手薄なら補強
+2. **Moody Blues**: ローカルチェック + コードレビュー + lint/format 自動修正
    - BLOCKED → パイプライン停止
    - NEEDS WORK → ユーザーに修正を促して再実行
-   - SHIP IT → 次へ
-2. **Sticky Fingers**: コミット → プッシュ → PR作成 → CI確認 → マージ
+   - COMMIT READY → 完了報告
 
 ### トリガー例
-- 「レビューしてシップして」
-- 「チェックしてからPR出して」
-- `/dispatch`（引数なし → デフォルトでこれ）
+- 「この変更、仕上げて」
+- 「コミットできる状態にして」
+- `/dispatch`（引数なし、手元に diff がある場合）
 
-## Full
+## Forge
 
-フルパイプライン。調査 → レビュー → シップ → デプロイ。
+要件から実装一式。調査 → 実装 → テスト → レビュー。
 
 ```
-(Purple Haze) → Moody Blues → Sticky Fingers → (Gold Experience)
-  調査(任意)  →   品質検証  →   シッピング   →   デプロイ(任意)
+(Purple Haze) → Gold Experience → Spice Girl → Moody Blues
+  調査(任意)  →     実装       →  テスト強化  →  品質検証
 ```
 
 ### フロー
 
-1. **Purple Haze** (任意): 実装の背景調査、関連コードの影響範囲を調査
-2. **Moody Blues**: CI チェック + 多角的コードレビュー + lint/format 自動修正
-3. **Sticky Fingers**: コミット → PR → マージ
-4. **Gold Experience** (任意): ビルド → マイグレーション → デプロイ → ヘルスチェック
+1. **Purple Haze**（任意）: 実装の背景調査、影響範囲・既存パターンの調査
+2. **Gold Experience**: 要件理解 → 実装 → ローカル検証（全 green まで）
+3. **Spice Girl**: 境界値・異常系テストの追加
+4. **Moody Blues**: ローカルチェック + 多角的コードレビュー
 
 ### トリガー例
-- 「フルリリースして」
-- 「レビューからデプロイまで全部やって」
-- `/dispatch full`
+- 「この機能、実装からレビューまで全部やって」
+- 「VP-12 を実装して仕上げて」
+- `/dispatch forge`
 
-## Deploy
+## Polish
 
-マージ済みのコードをデプロイ。
+挙動を変えずに構造を美しくする。
 
 ```
-Gold Experience
-  デプロイ
+Sticky Fingers → Moody Blues
+  リファクタ   →  品質検証
 ```
 
 ### フロー
 
-1. **Gold Experience**: ビルド → マイグレーション → デプロイ → ヘルスチェック
+1. **Sticky Fingers**: 安全網確認 → 一手ずつ分解・再結合（テストがなければ Spice Girl を先に挟む）
+2. **Moody Blues**: 挙動変更が混入していないか最終検証
 
 ### トリガー例
-- 「本番にデプロイして」
-- `/dispatch deploy`
+- 「このモジュールきれいにして」
+- 「リファクタして」
+- `/dispatch polish`
+
+## Barrage
+
+独立した複数のコード作業を並列一斉実行。
+
+```
+Sex Pistols → Moody Blues
+  並列作業   →  品質検証
+```
+
+### フロー
+
+1. **Sex Pistols**: タスク分解 → 並列サブエージェント実行 → 統合検証
+2. **Moody Blues**: 合成後の diff 全体をレビュー
+
+### トリガー例
+- 「この API 移行、全ファイル一斉にやって」
+- `/dispatch barrage`
 
 ## Custom
 
@@ -70,15 +92,13 @@ Gold Experience
 
 | パターン | フロー | ユースケース |
 |---------|--------|------------|
-| テスト & シップ | Spice Girl → Moody Blues → Sticky Fingers | テスト強化してからシップ |
-| シップ & デプロイ | Sticky Fingers → Gold Experience | レビュー済みをデプロイ |
-| 並列スプリント | Sex Pistols | 複数タスク並列実行 |
-| テスト + レビュー | Spice Girl → Moody Blues | テスト追加してレビューのみ |
 | 調査 → テスト | Purple Haze → Spice Girl | 調査してからテスト設計 |
+| テスト + レビュー | Spice Girl → Moody Blues | テスト追加してレビューのみ |
+| リファクタ → 実装 | Sticky Fingers → Gold Experience | 構造を整えてから機能を生やす |
+| 調査のみ | Purple Haze | 技術調査・根本原因特定 |
 
 ### トリガー例
-- 「テスト書いてからシップして」→ Spice Girl → Moody Blues → Sticky Fingers
-- 「この3つのIssueを並列で」→ Sex Pistols
+- 「先に構造整えてから実装して」→ Sticky Fingers → Gold Experience → Moody Blues
 - `/dispatch custom`
 
 ## 単体呼び出し
@@ -90,15 +110,15 @@ Gold Experience
 | 「レビューして」 | Moody Blues 直接 |
 | 「調べて」 | Purple Haze 直接 |
 | 「テスト書いて」 | Spice Girl 直接 |
-| 「デプロイして」 | Gold Experience 直接 |
-| 「シップして」 | Sticky Fingers 直接 |
+| 「実装して」 | Gold Experience 直接 |
+| 「リファクタして」 | Sticky Fingers 直接 |
 | 「並列でやって」 | Sex Pistols 直接 |
 
 > 1スタンドで完結する場合はパイプラインを組む必要なし。
 
 ## パイプライン途中再開
 
-パイプラインが途中で停止した場合（Moody Blues が BLOCKED、CI 失敗等）、修正後に途中から再開:
+パイプラインが途中で停止した場合（Moody Blues が BLOCKED、テスト失敗等）、修正後に途中から再開:
 
 ```
 /dispatch resume
@@ -106,7 +126,7 @@ Gold Experience
 
 ### 再開フロー
 
-1. 前回の停止ポイントを確認（git log、PR 状態、CI 結果）
+1. 前回の停止ポイントを確認（git status、テスト結果、前回レポート）
 2. 停止原因が解消されているか検証
 3. 停止したステップから再開（最初からやり直さない）
 
@@ -114,6 +134,6 @@ Gold Experience
 
 | 停止原因 | 再開ポイント |
 |---------|-------------|
-| Moody Blues BLOCKED (CI fail) | 修正後、Moody Blues から再実行 |
-| Sticky Fingers CI fail | 修正後、Sticky Fingers の CI 確認から |
-| Gold Experience deploy fail | Gold Experience のデプロイから |
+| Moody Blues BLOCKED (checks fail) | 修正後、Moody Blues から再実行 |
+| Gold Experience 検証 fail | Gold Experience の検証から |
+| Sticky Fingers 安全網なし | Spice Girl でテスト追加後、Sticky Fingers から |
