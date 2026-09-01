@@ -21,10 +21,10 @@ team "bucciarati" {
     roster {
         stand "purple-haze" display="Purple Haze" user="Pannacotta Fugo" role="Research" model="opus" color="red"
         stand "spice-girl" display="Spice Girl" user="Trish Una" role="Test Generation" model="sonnet" color="pink"
-        stand "moody-blues" display="Moody Blues" user="Leone Abbacchio" role="Quality Gate" model="sonnet" color="purple"
+        stand "moody-blues" display="Moody Blues" user="Leone Abbacchio" role="Quality Gate" model="opus" color="purple"
         stand "sticky-fingers" display="Sticky Fingers" user="Bruno Bucciarati" role="Adversarial Verification" model="opus" color="blue"
     }
 
-    // モデル配分の原則: 思考の深さが質を決める仕事（調査・敵対的検証）= opus / 規律が質を決める頻出の仕事（テスト・レビュー）= sonnet
+    // モデル配分の原則: 失敗が沈黙する仕事（調査・レビュー・敵対的検証）= opus / 失敗が音を立てる仕事（テスト生成）= sonnet
     // さらに深い思考が必要な場面は呼び出し時に fable を指定（frontmatter には固定しない）
 }

@@ -24,10 +24,10 @@ JoJo Part 5「チーム・ブチャラティ」をモチーフにした4体の�
 |-------|------|------|-------|------|
 | **Purple Haze** | Fugo | Research | opus | 前: 深掘り調査、副作用なし。着手前調査は調査ブリーフで締める |
 | **Spice Girl** | Trish | Test Generation | sonnet | 後: t-wada流テストピラミッド |
-| **Moody Blues** | Abbacchio | Quality Gate | sonnet | 後: ローカルチェック + 多角的コードレビュー |
+| **Moody Blues** | Abbacchio | Quality Gate | opus | 後: ローカルチェック + 多角的コードレビュー |
 | **Sticky Fingers** | Bucciarati | Adversarial Verification | opus | 後: 嘘の味 — claim 分解と敵対的検証（santa の独立レビュアー） |
 
-> **モデル配分の考え方**: 思考の深さが質を決める仕事（調査・敵対的検証）= opus。規律とプロセスが質を決める頻出の仕事（レビュー・テスト）= sonnet。さらに深い思考が必要な場面では、呼び出し時に fable へのエスカレーションを指定できる。
+> **モデル配分の考え方**: 失敗が沈黙する仕事（調査・レビュー・敵対的検証）= opus。失敗が音を立てて自己検証される仕事（テスト生成）= sonnet。さらに深い思考が必要な場面では、呼び出し時に fable へのエスカレーションを指定できる。
 
 ## レビュー深度メニュー
 

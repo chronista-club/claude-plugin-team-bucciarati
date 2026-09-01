@@ -18,10 +18,10 @@ claude plugin install chronista-club/claude-plugin-team-bucciarati
 |-------|------|------|-------|
 | Purple Haze | Fugo | Research | opus |
 | Spice Girl | Trish | Test Generation | sonnet |
-| Moody Blues | Abbacchio | Quality Gate | sonnet |
+| Moody Blues | Abbacchio | Quality Gate | opus |
 | Sticky Fingers | Bucciarati | Adversarial Verification | opus |
 
-> Model policy: deep-thinking work (research / adversarial verification) runs on opus; frequent, discipline-driven work (test / review) runs on sonnet.
+> Model policy: work whose failures are silent (research / review / adversarial verification) runs on opus; self-verifying work (test generation) runs on sonnet.
 
 ## Usage
 
