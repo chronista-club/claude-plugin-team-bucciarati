@@ -109,6 +109,17 @@ fn read(root: &Path, rel: &str) -> Result<String> {
     fs::read_to_string(root.join(rel)).with_context(|| format!("{rel} が読めません"))
 }
 
+/// CHANGELOG からリリース済みの最新バージョンを取り出す。
+/// nightly 積み方式では先頭に `## [Unreleased]` が常在するため、これは飛ばして
+/// 最初の `## [x.y.z]` 見出しを返す。
+fn changelog_latest_version(changelog: &str) -> Option<&str> {
+    changelog
+        .lines()
+        .filter(|l| l.starts_with("## ["))
+        .filter_map(|l| l.split(['[', ']']).nth(1))
+        .find(|v| !v.eq_ignore_ascii_case("unreleased"))
+}
+
 /// frontmatter (--- ... ---) から `key: value` を取り出す
 fn frontmatter_value(md: &str, key: &str) -> Option<String> {
     let mut in_fm = false;
@@ -302,11 +313,7 @@ fn main() -> Result<()> {
             .context("plugin.json の parse に失敗")?;
     let version = plugin_json["version"].as_str().unwrap_or_default();
     let changelog = read(&root, "CHANGELOG.md")?;
-    let latest = changelog
-        .lines()
-        .find(|l| l.starts_with("## ["))
-        .and_then(|l| l.split(['[', ']']).nth(1))
-        .unwrap_or_default();
+    let latest = changelog_latest_version(&changelog).unwrap_or_default();
     if version != latest {
         err(format!(
             "version 不一致: plugin.json = {version} / CHANGELOG 最新 = {latest}"
@@ -328,5 +335,29 @@ fn main() -> Result<()> {
             eprintln!("  - {e}");
         }
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn changelog_latest_version_skips_unreleased() {
+        // nightly 積み方式では Unreleased セクションが常在する — これは「最新版」ではない
+        let changelog = "# Changelog\n\n## [Unreleased]\n\n### Added\n- 何か\n\n## [0.18.0] - 2026-07-09\n\n## [0.17.2] - 2026-07-01\n";
+        assert_eq!(changelog_latest_version(changelog), Some("0.18.0"));
+    }
+
+    #[test]
+    fn changelog_latest_version_without_unreleased() {
+        let changelog = "# Changelog\n\n## [0.18.0] - 2026-07-09\n\n## [0.17.2] - 2026-07-01\n";
+        assert_eq!(changelog_latest_version(changelog), Some("0.18.0"));
+    }
+
+    #[test]
+    fn changelog_latest_version_none_when_no_release() {
+        let changelog = "# Changelog\n\n## [Unreleased]\n\n### Added\n- まだ一度もリリースしていない\n";
+        assert_eq!(changelog_latest_version(changelog), None);
     }
 }
