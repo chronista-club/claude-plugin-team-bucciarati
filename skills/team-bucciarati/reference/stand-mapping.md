@@ -1,7 +1,9 @@
-<!-- 移設元: claude-plugin-chronista-style skills/code-review/reference/stand-mapping.md (2026-09-01、code-review スキル削除に伴い移設) -->
 # Code Review — 観点 ↔ Stand マッピング詳細
 
-`SKILL.md §A.3` の補完。各 Pass の具体的な観点と Stand の役割。
+各レビュー Pass の具体的な観点と、担当する Stand の対応表。
+
+> **NOTE**: Phase 2（レビュー・調査・テスト機能の再設計）で本格改稿予定。
+> 現状は 3 体ロスター（Purple Haze / Spice Girl / Moody Blues）への振り替えのみ。
 
 ---
 
@@ -15,7 +17,7 @@
 - 依存関係 / 循環依存
 - レイヤリング (data / logic / UI)
 
-**推奨 Stand**: **Aerosmith** (俯瞰)
+**推奨 Stand**: **Moody Blues** (俯瞰 pass)
 
 **補助**: 必要なら Purple Haze で個別領域を深掘り
 
@@ -109,7 +111,7 @@ UI 特化 Stand を将来追加する場合のホルダー。
 - 開発体験 (DX)
 - packaging / signing / release flow
 
-**推奨 Stand**: **Gold Experience** (build / migrate / deploy / health check)
+**推奨 Stand**: **Moody Blues** (detect-ci.sh によるローカルビルド・チェック検証の範囲まで)。release flow 自体は team-b の領分外（コミットライン以降）
 
 ---
 
@@ -120,7 +122,7 @@ UI 特化 Stand を将来追加する場合のホルダー。
 - 責務漂流 (file 名と中身のズレ)
 - 分割案の提案
 
-**推奨 Stand**: **Aerosmith** (俯瞰) + **Purple Haze** (深掘り)
+**推奨 Stand**: **Purple Haze** (深掘り) + **Moody Blues** (俯瞰)
 
 **判断基準**:
 - 500 行未満 → OK
@@ -133,17 +135,15 @@ UI 特化 Stand を将来追加する場合のホルダー。
 
 | Stand | 主領域 | review での出番 |
 |---|---|---|
-| **Aerosmith** | Orchestrator | Pass 1, 8 / 全体 dispatch / 集約 |
-| **Moody Blues** | Quality Gate | Pass 2, 4, 5 (CI + 4 視点 + 信頼度) |
-| **Purple Haze** | Research | Pass 3 / 深掘り (Phase 2) |
+| **Purple Haze** | Research | Pass 3, 8 / 特定 issue の深掘り |
 | **Spice Girl** | Test Generation | Pass 4 (testing aspect) |
-| **Gold Experience** | Deploy | Pass 7 (build / 配布) |
-| **Sticky Fingers** | Shipping | review 後の fix commit / merge |
-| **Sex Pistols** | Parallel Workers | (review 自体には使わない、Aerosmith が parallel dispatch を担う) |
+| **Moody Blues** | Quality Gate | Pass 1, 2, 4, 5, 7 (CI + 4 視点 + 信頼度) |
 
 ---
 
 ## 並列 dispatch 推奨組合せ
+
+メインセッションが Agent ツールで複数 Stand を並列に呼び出す。
 
 **依存なしで並列出せる**:
 - Pass 1 + 2 + 3 + 4 + 7 + 8 — 全て独立観点
@@ -151,21 +151,3 @@ UI 特化 Stand を将来追加する場合のホルダー。
 **Sequential 推奨**:
 - Pass 5 (バグ) は Pass 2 (モジュール review) の output を入力にすると質↑
 - Pass 6 (UX) は手動なので並列 dispatch には乗らない
-
-**Hybrid Z での並列例 (Standard / Deep)**:
-
-```
-Phase 1 (parallel):
-  Aerosmith ← Pass 1, 8
-  Moody Blues ← Pass 2, 4, 5
-  Purple Haze ← Pass 3
-  Spice Girl ← Pass 4 (test)
-  Gold Experience ← Pass 7
-
-Phase 2 (sequential, iterative):
-  Purple Haze で深掘り (Phase 1 の特定 issue)
-  ↓
-  ユーザに「次の観点どうする？」
-  ↓
-  必要なら別 Stand 再 dispatch
-```

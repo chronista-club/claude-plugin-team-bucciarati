@@ -12,6 +12,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **スキル `santa-method` (v1.0.0)** を claude-plugin-chronista-style から移設: 多 agent 敵対的検証 — 独立した 2 reviewer (文脈非共有の並列 subagent) が両方 PASS するまで出荷しない収束 loop。「レビュー系は agent team プラグインに凝集させる」裁定 (2026-09-01) による。中身は無改変で移動、chronista 流の slim 化は本 repo の次回棚卸しで行う
 - `skills/team-bucciarati/reference/stand-mapping.md`: レビュー観点 (Pass 1〜8) ↔ Stand の対応表。chronista-style の code-review スキル削除 (汎用レビューは Claude Code 標準 /code-review へ) に伴い、Stand 固有の知識だけをこちらへ移設
 
+### Changed
+- **Phase 1 減量リファクタリング**: 半年の使用実態（ほぼレビュー、たまに調査・テスト）に合わせ、チームを「開発の前後（調査・テスト・レビュー）を支える品質チーム」に再編。ロスターを 7 体 → 3 体（Purple Haze / Spice Girl / Moody Blues）に縮小。実装（真ん中）はユーザーとメインセッションの領分
+- `team.kdl`: pipelines ブロックを撤去し、scope を新スコープに更新。teamb_check からパイプライン検証（旧 Section 3）を削除し、frontmatter / CHANGELOG 抽出のユニットテストを追加
+- Rust crate を `teamb-metrics` → `teamb-check` にリネームし、依存を 3 つ（anyhow / club-kdl / serde_json）に削減
+
+### Removed
+- **実装系スタンド 3 体**: Gold Experience（実装）/ Sticky Fingers（リファクタリング）/ Sex Pistols（並列コード作業）— 「SF を敵対的レビュアーに転身」案は Phase 2 の設計カードとして温存
+- **Aerosmith（オーケストレーター）**: /dispatch コマンド、パイプライン定義（Finish / Forge / Polish / Barrage / Research）、VP Radar 連携ごと削除。スタンドは直接呼び出しに一本化
+- **teamb-metrics MCP サーバー + improve スキル**: main.rs（teamb_measure / teamb_decide / teamb_log）、4.9MB の追跡バイナリ、.mcp.json を削除（`${CLAUDE_PLUGIN_ROOT}` 未展開による起動失敗も解消）
+- reference の孤児 4 ファイル: pipelines.md / worker-conventions.md / vp-canvas.md / stand-context.md
+
+### Fixed
+- teamb_check が CHANGELOG の `## [Unreleased]` を最新版として誤認し、nightly 品質ゲート（check-teamdef）が恒常的に失敗するバグを修正 (#15)
+
 ## [0.18.0] - 2026-07-09
 
 ### Changed
