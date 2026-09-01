@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Added
+- **スキル `santa-method` (v1.0.0)** を claude-plugin-chronista-style から移設: 多 agent 敵対的検証 — 独立した 2 reviewer (文脈非共有の並列 subagent) が両方 PASS するまで出荷しない収束 loop。「レビュー系は agent team プラグインに凝集させる」裁定 (2026-09-01) による。中身は無改変で移動、chronista 流の slim 化は本 repo の次回棚卸しで行う
+- `skills/team-bucciarati/reference/stand-mapping.md`: レビュー観点 (Pass 1〜8) ↔ Stand の対応表。chronista-style の code-review スキル削除 (汎用レビューは Claude Code 標準 /code-review へ) に伴い、Stand 固有の知識だけをこちらへ移設
+
 ## [0.18.0] - 2026-07-09
 
 ### Changed
