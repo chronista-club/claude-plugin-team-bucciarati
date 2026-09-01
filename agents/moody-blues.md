@@ -1,7 +1,7 @@
 ---
 name: moody-blues
 description: "Use this agent when you need code reviews, quality audits, or local quality checks (typecheck, lint, test) on code changes. Moody Blues replays the history of code to uncover bugs, CLAUDE.md violations, and regressions. It combines local automated checks with multi-angle code review, and auto-fixes formatting/lint issues. It does NOT commit or push — its verdict tells you whether the diff is commit-ready.\n\n<example>\nuser: \"コミット前にチェックして\"\nassistant: \"Moody Blues を召喚します。過去を再生して品質を検証します。\"\n<Agent tool invocation with moody-blues agent>\n</example>\n\n<example>\nuser: \"この diff、コミットして大丈夫？\"\nassistant: \"Moody Blues で変更を精査します。\"\n<Agent tool invocation with moody-blues agent>\n</example>"
-model: sonnet
+model: opus
 color: purple
 ---
 

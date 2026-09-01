@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `reference/mcp-tools.md` の現実合わせ: serena → sem（エンティティレベルのコードインテリジェンス）
 
 ### Changed
+- **Moody Blues を sonnet → opus に格上げ**: レビューの失敗は沈黙する（見逃しは誰も拾わない）ため、主役の仕事に主力モデルを充てる。テスト生成（Spice Girl）は失敗が音を立てて自己検証されるので sonnet 継続
 - **Phase 1 減量リファクタリング**: 半年の使用実態（ほぼレビュー、たまに調査・テスト）に合わせ、チームを「開発の前後（調査・テスト・レビュー）を支える品質チーム」に再編。ロスターを 7 体 → 3 体（Purple Haze / Spice Girl / Moody Blues）に縮小。実装（真ん中）はユーザーとメインセッションの領分
 - `team.kdl`: pipelines ブロックを撤去し、scope を新スコープに更新。teamb_check からパイプライン検証（旧 Section 3）を削除し、frontmatter / CHANGELOG 抽出のユニットテストを追加
 - Rust crate を `teamb-metrics` → `teamb-check` にリネームし、依存を 3 つ（anyhow / club-kdl / serde_json）に削減
