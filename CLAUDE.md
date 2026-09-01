@@ -2,14 +2,14 @@
 
 JoJo Part 5 スタンドをモチーフにした Claude Code エージェントチームプラグイン。
 
-**スコープ: 開発の前後（調査・テスト・レビュー）で強く美しいコードに貢献するレイヤーまで。** チームの終点は「コミット可能な working tree」— 真ん中（実装）とコミット・PR・マージ・デプロイ（CI/CD 以降のフロー）はユーザーとメインセッションの領分。
+**スコープ: 開発の前後（調査・テスト・レビュー・検証）で強く美しいコードに貢献するレイヤーまで。** チームの終点は「コミット可能な working tree」— 真ん中（実装）とコミット・PR・マージ・デプロイ（CI/CD 以降のフロー）はユーザーとメインセッションの領分。
 
 ## 構成
 
 ```
 team.kdl            # ★ SSOT — ロスター/モデル配分/コミットライン境界の構造化ファクト
 .claude-plugin/     # プラグインメタデータ (plugin.json)
-agents/             # スタンドエージェント定義 (3体) — 散文の正はこちら
+agents/             # スタンドエージェント定義 (4体) — 散文の正はこちら
 skills/             # スキル定義 (team-bucciarati, santa-method)
 mcp-server/         # teamb-check — SSOT ドリフト検出器 (Rust)
 scripts/            # 共有スクリプト (detect-ci.sh, check-teamdef.sh, nightly-release.sh)
@@ -22,6 +22,7 @@ scripts/            # 共有スクリプト (detect-ci.sh, check-teamdef.sh, nig
 | Purple Haze | 前: 深層リサーチ・調査 |
 | Spice Girl | 後: テスト生成 |
 | Moody Blues | 後: ローカル品質チェック・コードレビュー |
+| Sticky Fingers | 後: 敵対的検証 — 嘘の味（santa-method の独立レビュアー） |
 
 ## リリースフロー（nightly 積み方式）
 

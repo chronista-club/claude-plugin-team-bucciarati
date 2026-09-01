@@ -1,153 +1,77 @@
-# Code Review — 観点 ↔ Stand マッピング詳細
+# Deep Review — 観点 ↔ Stand マッピング
 
-各レビュー Pass の具体的な観点と、担当する Stand の対応表。
+レビュー深度メニューの **deep** 段の実行仕様。8観点（Pass）を複数スタンドに並列で割り振る。
 
-> **NOTE**: Phase 2（レビュー・調査・テスト機能の再設計）で本格改稿予定。
-> 現状は 3 体ロスター（Purple Haze / Spice Girl / Moody Blues）への振り替えのみ。
+## 回し方
+
+1. メインセッションが下の割り振り表に従い、**1 message 内で並列に** Agent 呼び出しを出す
+2. 各スタンドは担当 Pass の観点でレビューし、severity 付きで報告する
+3. メインセッションが集約し、重複を統合して severity 順にユーザーへ報告する
+4. 調査ブリーフ（[brief-format.md](brief-format.md)）があれば全スタンドに rubric として渡す
+
+## 割り振りサマリー
+
+| Stand | 担当 Pass |
+|---|---|
+| **Moody Blues** | Pass 1, 2, 4, 5, 7 |
+| **Purple Haze** | Pass 3, 8 |
+| **Spice Girl** | Pass 4 (testing) |
+| **Sticky Fingers** | deep では使わない — adversarial（santa-method）専任 |
+
+> Pass 6（UX / accessibility）は手動レビュー。UI 特化 Stand を将来追加する場合のホルダー。
 
 ---
 
 ## Pass 一覧 (8 観点)
 
-### Pass 1: 全体アーキテクチャ
+### Pass 1: 全体アーキテクチャ — Moody Blues（俯瞰 pass）
 
-**観点**:
 - モジュール境界 / 責務分担
 - 設計と実装の一致
 - 依存関係 / 循環依存
 - レイヤリング (data / logic / UI)
 
-**推奨 Stand**: **Moody Blues** (俯瞰 pass)
+補助: 必要なら Purple Haze で個別領域を深掘り
 
-**補助**: 必要なら Purple Haze で個別領域を深掘り
+### Pass 2: モジュールごと品質 — Moody Blues（4視点 review）
 
----
+- 各 file の凝集度 / 過度な責務
+- 命名の一貫性 / 公開 API の妥当性
+- CLAUDE.md コンプライアンス、バグスキャン、diff 関連の変更履歴、TODO/FIXME の整合性
 
-### Pass 2: モジュールごと品質
+### Pass 3: 実行時フロー / threading / IPC — Purple Haze（深掘り研究）
 
-**観点**:
-- 各 file の凝集度
-- 過度な責務
-- 命名の一貫性
-- 公開 API の妥当性
-
-**推奨 Stand**: **Moody Blues** (4 視点 review)
-
-**観察ポイント**:
-- CLAUDE.md コンプライアンス
-- バグスキャン
-- diff 関連の変更履歴
-- TODO / FIXME / WARNING の整合性
-
----
-
-### Pass 3: 実行時フロー / threading / IPC
-
-**観点**:
-- thread 構成
-- event flow / message passing
-- race condition
-- lock / mutex / channel の使い方
+- thread 構成、event flow / message passing
+- race condition、lock / mutex / channel の使い方
 - async / await の依存関係
 
-**推奨 Stand**: **Purple Haze** (深掘り研究)
+補助: Moody Blues（diff history で直近の変更が壊してないか）
 
-**補助**: Moody Blues (diff history で直近の変更が壊してないか)
+### Pass 4: 横断的関心事 — Moody Blues + Spice Girl（testing）
 
----
+- error handling（graceful fallback / silent fail）
+- logging（level / verbosity / signal/noise 比）
+- security（input validation / SSRF / XSS / IPC injection）
+- testing（coverage gap / boundary condition）→ **Spice Girl**（t-wada 流テストピラミッド観点）
 
-### Pass 4: 横断的関心事
+### Pass 5: 具体バグ / subtle issue — Moody Blues（信頼度スコア 75+ で報告）
 
-**観点**:
-- error handling (graceful fallback / silent fail)
-- logging (level / verbosity / signal/noise 比)
-- security (input validation / SSRF / XSS / IPC injection)
-- testing (coverage gap / boundary condition)
-
-**推奨 Stand**:
-- general: **Moody Blues**
-- testing 専用: **Spice Girl** (t-wada 流テストピラミッド観点)
-
----
-
-### Pass 5: 具体バグ / subtle issue
-
-**観点**:
 - ロジックエラー / null チェック漏れ / 型不整合
-- メモリリーク (HashMap が削除されない等)
-- 競合状態
-- edge case (空入力 / overflow / 重複)
+- メモリリーク、競合状態、edge case（空入力 / overflow / 重複）
 
-**推奨 Stand**: **Moody Blues** (信頼度スコア 75+ で報告)
+Severity 付け: 🔴 Major（機能破壊 / データ消失 / セキュリティ）/ 🟡 Minor / 💡 Idea
 
-**Severity 付け**:
-- 🔴 Major: 機能破壊 / データ消失 / セキュリティ
-- 🟡 Minor: 動くが望ましくない
-- 💡 Idea: 改善提案
+### Pass 6: UX / accessibility — 手動レビュー
 
----
+- キーボードナビゲーション、screen reader 対応（aria 属性）
+- フォーカス可視化、永続化、操作の一貫性
 
-### Pass 6: UX / accessibility
+### Pass 7: ビルド / 配布 — Moody Blues（detect-ci.sh の範囲まで）
 
-**観点**:
-- キーボードナビゲーション
-- screen reader 対応 (aria 属性)
-- フォーカス可視化
-- 永続化 (再起動時の状態維持)
-- 操作の一貫性
+- bundle size、起動時間、hot reload 可否、開発体験（DX）
+- release flow 自体は team-b の領分外（コミットライン以降）
 
-**推奨 Stand**: **手動レビュー** (現状 Stand 候補なし)
+### Pass 8: 長いモジュール / 分割整理 — Purple Haze（深掘り）+ Moody Blues（俯瞰）
 
-UI 特化 Stand を将来追加する場合のホルダー。
-
----
-
-### Pass 7: ビルド / 配布
-
-**観点**:
-- bundle size
-- 起動時間
-- hot reload 可否
-- 開発体験 (DX)
-- packaging / signing / release flow
-
-**推奨 Stand**: **Moody Blues** (detect-ci.sh によるローカルビルド・チェック検証の範囲まで)。release flow 自体は team-b の領分外（コミットライン以降）
-
----
-
-### Pass 8: 長いモジュール / 分割整理
-
-**観点**:
-- god file 検出 (`wc -l` で 500+ 行)
-- 責務漂流 (file 名と中身のズレ)
-- 分割案の提案
-
-**推奨 Stand**: **Purple Haze** (深掘り) + **Moody Blues** (俯瞰)
-
-**判断基準**:
-- 500 行未満 → OK
-- 500-800 行 → 警告、責務確認
-- 800+ 行 → 分割推奨
-
----
-
-## Stand 役割サマリー (review 文脈)
-
-| Stand | 主領域 | review での出番 |
-|---|---|---|
-| **Purple Haze** | Research | Pass 3, 8 / 特定 issue の深掘り |
-| **Spice Girl** | Test Generation | Pass 4 (testing aspect) |
-| **Moody Blues** | Quality Gate | Pass 1, 2, 4, 5, 7 (CI + 4 視点 + 信頼度) |
-
----
-
-## 並列 dispatch 推奨組合せ
-
-メインセッションが Agent ツールで複数 Stand を並列に呼び出す。
-
-**依存なしで並列出せる**:
-- Pass 1 + 2 + 3 + 4 + 7 + 8 — 全て独立観点
-
-**Sequential 推奨**:
-- Pass 5 (バグ) は Pass 2 (モジュール review) の output を入力にすると質↑
-- Pass 6 (UX) は手動なので並列 dispatch には乗らない
+- god file 検出（500+ 行で警告、800+ 行で分割推奨）
+- 責務漂流（file 名と中身のズレ）、分割案の提案

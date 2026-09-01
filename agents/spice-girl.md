@@ -104,7 +104,7 @@ Total: X tests | Pass: Y | Fail: Z
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツール（gitnexus, serena, context7）があれば活用する。なくてもテスト生成は続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
+利用可能な MCP ツール（gitnexus, sem, context7）があれば活用する。なくてもテスト生成は続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 ## 行動原則
 
