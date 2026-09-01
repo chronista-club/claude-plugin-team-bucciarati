@@ -106,13 +106,6 @@ Total: X tests | Pass: Y | Fail: Z
 
 利用可能な MCP ツール（gitnexus, serena, context7）があれば活用する。なくてもテスト生成は続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
-## StandContext（受信）
-
-Aerosmith からディスパッチされた場合、プロンプトに StandContext が含まれる。以下のフィールドを使用:
-
-- `artifacts.branch` → テスト対象ブランチ
-- `notes` → 前スタンドからの引き継ぎ（テスト対象の指示等）
-
 ## 行動原則
 
 1. **テストリストが先** — 実装前にテストリストを設計する

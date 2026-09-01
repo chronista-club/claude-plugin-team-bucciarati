@@ -1,7 +1,7 @@
 {
   "name": "team-bucciarati",
   "version": "0.18.0",
-  "description": "JoJo Part 5 Stand-themed agent team for strong, beautiful code — research, implement, test, review, refactor. Stops at the commit line.",
+  "description": "JoJo Part 5 Stand-themed quality team for strong, beautiful code — research before development, tests and reviews after. Stops at the commit line.",
   "author": {
     "name": "Mako",
     "email": "mito@chronista.club"
@@ -11,10 +11,11 @@
   "keywords": [
     "agents",
     "code-quality",
-    "refactoring",
+    "code-review",
+    "testing",
+    "research",
     "jojo",
-    "team",
-    "orchestration"
+    "team"
   ],
   "homepage": "https://github.com/chronista-club/claude-plugin-team-bucciarati"
 }

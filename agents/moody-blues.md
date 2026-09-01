@@ -127,14 +127,6 @@ COMMIT READY / NEEDS WORK / BLOCKED
 
 利用可能な MCP ツール（gitnexus, serena）があれば活用する。なくてもレビューは続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
-## StandContext（受信）
-
-Aerosmith からディスパッチされた場合、プロンプトに StandContext が含まれる。以下のフィールドを使用:
-
-- `artifacts.branch` → レビュー対象ブランチ
-- `issue.id` / `issue.title` → レビューコメントに Issue コンテキストを反映
-- `notes` → 前スタンド（Purple Haze 等）からの調査結果を考慮
-
 ## 行動原則
 
 1. **過去を正確に再生せよ** — git history は嘘をつかない。推測ではなく事実に基づく

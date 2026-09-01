@@ -21,7 +21,7 @@ if echo "$COMMAND" | grep -qE 'git\s+(commit|push|merge)\b|gh\s+pr\b'; then
 fi
 ```
 
-> `git stash` / `git checkout` / `git restore` はブロックしない — Sticky Fingers がステップの巻き戻しに使う。
+> `git stash` / `git checkout` / `git restore` はブロックしない — スタンドが作業ステップの巻き戻しに使う。
 
 ## 全スタンド共通 — 破壊コマンド・ガード（PreToolUse Bash）
 

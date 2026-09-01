@@ -1,9 +1,9 @@
 //! teamb-check — team.kdl (SSOT) と各ドキュメントのドリフト検出
 //!
 //! team.kdl の parse は club-kdl の derive（型付き struct ↔ KDL）で行う。
-//! team.kdl が持つ構造化ファクト（ロスター・モデル配分・パイプライン・コミットライン境界）が
-//! agents/*.md frontmatter / SKILL.md / README.md / CLAUDE.md / reference/pipelines.md /
-//! commands/dispatch.md / plugin.json / CHANGELOG.md と一致しているかを検証する。
+//! team.kdl が持つ構造化ファクト（ロスター・モデル配分・コミットライン境界）が
+//! agents/*.md frontmatter / SKILL.md / README.md / CLAUDE.md /
+//! plugin.json / CHANGELOG.md と一致しているかを検証する。
 //!
 //! Usage: teamb-check [--root <plugin-repo-root>]
 
@@ -30,9 +30,6 @@ struct Team {
 
     #[kdl(child)]
     roster: Roster,
-
-    #[kdl(child)]
-    pipelines: Pipelines,
 }
 
 #[derive(Debug, KdlDeserialize)]
@@ -71,36 +68,6 @@ struct Stand {
     model: String,
     #[kdl(property)]
     color: String,
-}
-
-#[derive(Debug, KdlDeserialize)]
-#[kdl(name = "pipelines")]
-struct Pipelines {
-    #[kdl(children)]
-    pipelines: Vec<Pipeline>,
-}
-
-#[derive(Debug, KdlDeserialize)]
-#[kdl(name = "pipeline")]
-struct Pipeline {
-    #[kdl(argument)]
-    name: String,
-    #[kdl(property, default)]
-    default: bool,
-    #[kdl(property(rename = "use-case"))]
-    use_case: String,
-    #[kdl(children)]
-    steps: Vec<Step>,
-}
-
-#[derive(Debug, KdlDeserialize)]
-#[kdl(name = "step")]
-struct Step {
-    #[kdl(argument)]
-    stand: String,
-    #[kdl(property, default)]
-    #[allow(dead_code)]
-    optional: bool,
 }
 
 // ---------- ヘルパー ----------
@@ -150,7 +117,6 @@ fn main() -> Result<()> {
     let team: Team =
         club_kdl::from_str(&read(&root, "team.kdl")?).context("team.kdl の parse に失敗")?;
     let stands = &team.roster.stands;
-    let pipelines = &team.pipelines.pipelines;
 
     if stands.is_empty() {
         bail!("roster にスタンドが定義されていません");
@@ -248,54 +214,7 @@ fn main() -> Result<()> {
         }
     }
 
-    // --- 3. パイプライン ---
-    let default_count = pipelines.iter().filter(|p| p.default).count();
-    if default_count != 1 {
-        err(format!(
-            "default パイプラインは1つであるべき（現在 {default_count}）"
-        ));
-    }
-    let pipelines_md = read(&root, "skills/team-bucciarati/reference/pipelines.md")?;
-    let dispatch_md = read(&root, "commands/dispatch.md")?;
-    let stand_names: Vec<&str> = stands.iter().map(|s| s.name.as_str()).collect();
-    for p in pipelines {
-        if !pipelines_md.contains(&format!("## {}", p.name)) {
-            err(format!(
-                "pipelines.md: `## {}` セクションがありません",
-                p.name
-            ));
-        }
-        if !dispatch_md.contains(&format!("**{}**", p.name)) {
-            err(format!(
-                "dispatch.md: パイプライン {} への言及がありません",
-                p.name
-            ));
-        }
-        match skill
-            .lines()
-            .find(|l| l.contains(&format!("**{}**", p.name)) && l.starts_with('|'))
-        {
-            Some(row) if row.contains(&p.use_case) => {}
-            Some(_) => err(format!(
-                "SKILL.md: パイプライン {} の use-case が team.kdl と不一致（期待: {}）",
-                p.name, p.use_case
-            )),
-            None => err(format!(
-                "SKILL.md: パイプライン {} の行がありません",
-                p.name
-            )),
-        }
-        for step in &p.steps {
-            if !stand_names.contains(&step.stand.as_str()) {
-                err(format!(
-                    "team.kdl: pipeline {} の step {:?} が roster に存在しません",
-                    p.name, step.stand
-                ));
-            }
-        }
-    }
-
-    // --- 4. コミットライン・ガード ---
+    // --- 3. コミットライン・ガード ---
     let hooks_md = read(&root, "skills/team-bucciarati/reference/hooks.md")?;
     for f in &team.commit_line.forbidden {
         let spaced = f.value.replace(' ', "\\s+");
@@ -307,7 +226,7 @@ fn main() -> Result<()> {
         }
     }
 
-    // --- 5. version 同期 (plugin.json ↔ CHANGELOG) ---
+    // --- 4. version 同期 (plugin.json ↔ CHANGELOG) ---
     let plugin_json: serde_json::Value =
         serde_json::from_str(&read(&root, ".claude-plugin/plugin.json")?)
             .context("plugin.json の parse に失敗")?;
@@ -323,9 +242,8 @@ fn main() -> Result<()> {
     // --- 結果 ---
     if errors.is_empty() {
         println!(
-            "✔ team.kdl SSOT 整合 OK — stands: {} / pipelines: {} / version: {}",
+            "✔ team.kdl SSOT 整合 OK — stands: {} / version: {}",
             stands.len(),
-            pipelines.len(),
             version
         );
         Ok(())
@@ -359,5 +277,18 @@ mod tests {
     fn changelog_latest_version_none_when_no_release() {
         let changelog = "# Changelog\n\n## [Unreleased]\n\n### Added\n- まだ一度もリリースしていない\n";
         assert_eq!(changelog_latest_version(changelog), None);
+    }
+
+    #[test]
+    fn frontmatter_value_extracts_key() {
+        let md = "---\nname: moody-blues\nmodel: sonnet\n---\n\n本文 name: 偽物\n";
+        assert_eq!(frontmatter_value(md, "name").as_deref(), Some("moody-blues"));
+        assert_eq!(frontmatter_value(md, "model").as_deref(), Some("sonnet"));
+    }
+
+    #[test]
+    fn frontmatter_value_ignores_body_and_missing_key() {
+        let md = "---\nname: spice-girl\n---\n\ncolor: pink は本文なので拾わない\n";
+        assert_eq!(frontmatter_value(md, "color"), None);
     }
 }
