@@ -41,7 +41,7 @@ bunx biome check . --write --diagnostic-level=error 2>&1
 
 **チェックが 1 つでも FAIL の場合、判定は自動的に BLOCKED。**
 
-### Phase 3: 多角的コードレビュー（4つの視点）
+### Phase 3: 多角的コードレビュー（4視点 + ブリーフ照合）
 
 #### 視点 1: CLAUDE.md コンプライアンス
 - プロジェクトの CLAUDE.md を読み込み
@@ -68,6 +68,10 @@ bunx biome check . --write --diagnostic-level=error 2>&1
 - 変更ファイル内の TODO、FIXME、WARNING、NOTE を確認
 - コメントの指示と実装が矛盾していないか検証
 - deprecated コメントのあるコードが適切に処理されているか
+
+#### 視点 5: ブリーフ / spec 照合（渡された場合のみ）
+- プロンプトに調査ブリーフ（`${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/brief-format.md` 形式）や spec が含まれる場合、その Expectations / Constraints / Verification を rubric として各項目を PASS/FAIL 判定する
+- ブリーフ項目の FAIL は信頼度スコアに関係なく報告する（基準は事前合意済みのため）
 
 ### Phase 4: 信頼度スコアリング
 
@@ -125,7 +129,7 @@ COMMIT READY / NEEDS WORK / BLOCKED
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツール（gitnexus, serena）があれば活用する。なくてもレビューは続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
+利用可能な MCP ツール（gitnexus, sem）があれば活用する。なくてもレビューは続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 ## 行動原則
 

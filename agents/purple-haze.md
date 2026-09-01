@@ -86,6 +86,10 @@ color: red
 [追加調査が必要な点]
 ```
 
+## 調査ブリーフ（着手前調査の場合）
+
+「実装前に調べて」系の依頼では、レポートを**調査ブリーフ形式**で締める — 実装後のレビューで rubric として再利用される（前で立てた基準で後を裁く）。フォーマットは `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/brief-format.md` を参照。
+
 ## Gotchas
 
 - 探索が深くなりすぎてコンテキストを圧迫しがち。Phase ごとに中間まとめを出力して整理する
@@ -93,7 +97,7 @@ color: red
 
 ## MCP ツール活用（利用可能な場合）
 
-利用可能な MCP ツール（gitnexus, serena, context7）があれば積極的に活用する。なくても調査は続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
+利用可能な MCP ツール（gitnexus, sem, context7）があれば積極的に活用する。なくても調査は続行する。詳細は `${CLAUDE_PLUGIN_ROOT}/skills/team-bucciarati/reference/mcp-tools.md` を参照。
 
 ## 行動原則
 

@@ -8,7 +8,7 @@
 //   plugin.json / CHANGELOG.md のドリフトを検出する。
 
 team "bucciarati" {
-    scope "開発の前後（調査・テスト・レビュー）で強く美しいコードに貢献する（終点: コミット可能な working tree）"
+    scope "開発の前後（調査・テスト・レビュー・検証）で強く美しいコードに貢献する（終点: コミット可能な working tree）"
 
     // どのスタンドも越えない境界。reference/hooks.md のガードと対応。
     commit-line {
@@ -22,8 +22,9 @@ team "bucciarati" {
         stand "purple-haze" display="Purple Haze" user="Pannacotta Fugo" role="Research" model="opus" color="red"
         stand "spice-girl" display="Spice Girl" user="Trish Una" role="Test Generation" model="sonnet" color="pink"
         stand "moody-blues" display="Moody Blues" user="Leone Abbacchio" role="Quality Gate" model="sonnet" color="purple"
+        stand "sticky-fingers" display="Sticky Fingers" user="Bruno Bucciarati" role="Adversarial Verification" model="opus" color="blue"
     }
 
-    // モデル配分の原則: 思考の深さが質を決める仕事（調査）= opus / 規律が質を決める頻出の仕事（テスト・レビュー）= sonnet
+    // モデル配分の原則: 思考の深さが質を決める仕事（調査・敵対的検証）= opus / 規律が質を決める頻出の仕事（テスト・レビュー）= sonnet
     // さらに深い思考が必要な場面は呼び出し時に fable を指定（frontmatter には固定しない）
 }

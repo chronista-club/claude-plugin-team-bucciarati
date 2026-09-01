@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **スキル `santa-method` (v1.0.0)** を claude-plugin-chronista-style から移設: 多 agent 敵対的検証 — 独立した 2 reviewer (文脈非共有の並列 subagent) が両方 PASS するまで出荷しない収束 loop。「レビュー系は agent team プラグインに凝集させる」裁定 (2026-09-01) による。中身は無改変で移動、chronista 流の slim 化は本 repo の次回棚卸しで行う
 - `skills/team-bucciarati/reference/stand-mapping.md`: レビュー観点 (Pass 1〜8) ↔ Stand の対応表。chronista-style の code-review スキル削除 (汎用レビューは Claude Code 標準 /code-review へ) に伴い、Stand 固有の知識だけをこちらへ移設
 
+- **Phase 2 レビュー・調査・テスト再設計**:
+  - **Sticky Fingers 復活・転身**: 「嘘の味」敵対的検証スタンド（Adversarial Verification / opus）として新規定義 — santa-method の Reviewer C。ロスター 3 → 4 体。定義の異なる 2 レビュアー（Moody Blues × Sticky Fingers）で reviewer agreement bias を構造的に低減
+  - **レビュー深度メニュー**: quick（Moody Blues 単騎）/ deep（8観点並列）/ adversarial（santa dual）を SKILL.md に設置。自然文で呼び分け、オーケストレーター無しでメインセッションが dispatch
+  - **調査ブリーフ（前→後の背骨）**: `reference/brief-format.md` を新設。Purple Haze の着手前調査がそのままレビューの rubric になる（Moody Blues に視点5「ブリーフ照合」を追加）
+  - **santa-method v2.0.0**: 326 → 98 行に slim 化し、Moody Blues × Sticky Fingers の dual review に正式接続。reviewer テンプレ・rubric 設計・failure modes は `reference/reviewer-template.md` へ分割
+  - `reference/stand-mapping.md` を deep レビューの実行仕様として本格改稿（割り振りサマリー + 回し方を明記）
+  - `reference/mcp-tools.md` の現実合わせ: serena → sem（エンティティレベルのコードインテリジェンス）
+
 ### Changed
 - **Phase 1 減量リファクタリング**: 半年の使用実態（ほぼレビュー、たまに調査・テスト）に合わせ、チームを「開発の前後（調査・テスト・レビュー）を支える品質チーム」に再編。ロスターを 7 体 → 3 体（Purple Haze / Spice Girl / Moody Blues）に縮小。実装（真ん中）はユーザーとメインセッションの領分
 - `team.kdl`: pipelines ブロックを撤去し、scope を新スコープに更新。teamb_check からパイプライン検証（旧 Section 3）を削除し、frontmatter / CHANGELOG 抽出のユニットテストを追加
