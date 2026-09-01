@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-09-02
+
 ### Added
 - **スキル `santa-method` (v1.0.0)** を claude-plugin-chronista-style から移設: 多 agent 敵対的検証 — 独立した 2 reviewer (文脈非共有の並列 subagent) が両方 PASS するまで出荷しない収束 loop。「レビュー系は agent team プラグインに凝集させる」裁定 (2026-09-01) による。中身は無改変で移動、chronista 流の slim 化は本 repo の次回棚卸しで行う
 - `skills/team-bucciarati/reference/stand-mapping.md`: レビュー観点 (Pass 1〜8) ↔ Stand の対応表。chronista-style の code-review スキル削除 (汎用レビューは Claude Code 標準 /code-review へ) に伴い、Stand 固有の知識だけをこちらへ移設
@@ -19,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **santa-method v2.0.0**: 326 → 98 行に slim 化し、Moody Blues × Sticky Fingers の dual review に正式接続。reviewer テンプレ・rubric 設計・failure modes は `reference/reviewer-template.md` へ分割
   - `reference/stand-mapping.md` を deep レビューの実行仕様として本格改稿（割り振りサマリー + 回し方を明記）
   - `reference/mcp-tools.md` の現実合わせ: serena → sem（エンティティレベルのコードインテリジェンス）
+
+- **`team.kdl` SSOT 化 + `teamb_check` ドリフト検出器**: ロスター・境界の構造化ファクトを team.kdl に一本化し、`scripts/check-teamdef.sh` で全ドキュメントとの整合を機械検証 (#10)
+- **nightly 積み方式のリリースフロー**: 昼は main に積み、毎晩 23:30 に品質ゲート付きで nightly prerelease を自動棚卸し。安定版のみが marketplace 経由でユーザーに届く (#13)
 
 ### Changed
 - **Moody Blues を sonnet → opus に格上げ**: レビューの失敗は沈黙する（見逃しは誰も拾わない）ため、主役の仕事に主力モデルを充てる。テスト生成（Spice Girl）は失敗が音を立てて自己検証されるので sonnet 継続
