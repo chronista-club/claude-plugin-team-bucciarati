@@ -1,3 +1,10 @@
+> **保守終了・アーカイブ（2026-09-07）**
+>
+> このリポジトリの保守は終了しました。今後の開発・更新は [plugin-team-bucciarati](https://github.com/chronista-club/plugin-team-bucciarati) で行います。
+> 導入・移行方法は [新カタログ chronista-plugins](https://github.com/chronista-club/chronista-plugins#旧配布先からの移行) を参照してください。
+> 旧・新カタログの marketplace 名は同じ `chronista-plugins` です。旧登録を利用中の場合は、設定を退避したうえで旧登録を解除し、新カタログから再導入してください。
+> 以下は保守終了時点の記録です。
+
 # Team Bucciarati
 
 JoJo's Bizarre Adventure Part 5 "Vento Aureo" をモチーフにした、Claude Code 向けエージェントチームプラグイン。
